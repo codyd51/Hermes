@@ -1,0 +1,9 @@
+Package: com.phillipt.hermes
+Name: Hermes
+Depends: mobilesubstrate, cc.tweak.libobjcipc
+Version: 0.0.1
+Architecture: iphoneos-arm
+Description: The minimalistic quick reply solution
+Maintainer: Phillip Tennen
+Author: Phillip Tennen
+Section: Tweaks
