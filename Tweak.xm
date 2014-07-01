@@ -8,6 +8,8 @@
 #import <notify.h>
 #import <libobjcipc/objcipc.h>
 #define kSettingsPath [NSHomeDirectory() stringByAppendingPathComponent:@"/Library/Preferences/com.phillipt.hermes.plist"]
+#define dla(x, a) if(debug) NSLog(x, a)
+#define dl(x) if(debug) NSLog(x)
 
 CKIMMessage* sbMessage = [[CKIMMessage alloc] init];
 BOOL isPending;
@@ -90,7 +92,7 @@ NSMutableDictionary* prefs = [NSMutableDictionary dictionaryWithContentsOfFile:k
 			};
 
 			[OBJCIPC sendMessageToAppWithIdentifier:@"com.apple.MobileSMS" messageName:@"com.phillipt.hermes.ipc" dictionary:responseInfoDict replyHandler:^(NSDictionary *response) {
-    		NSLog(@"Received reply from MobileSMS: %@", response);
+    		dla(@"Received reply from MobileSMS: %@", response);
 			}];
 		}
 	}
@@ -109,10 +111,10 @@ void loadPrefs() {
 	else enabled = [[prefs objectForKey:@"enabled"] boolValue];
 
 	if (!enabled) {
-		NSLog(@"[Hermes3] Hermes shutting down :(");
+		dl(@"[Hermes3] Hermes shutting down :(");
 	}
 	else {
-		NSLog(@"[Hermes3] Hermes turning on");
+		dl(@"[Hermes3] Hermes turning on");
 	}
 }
 
@@ -123,10 +125,10 @@ void loadPrefs() {
 	prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
 	[(NSMutableDictionary*)prefs setObject:@(enabled) forKey:@"enabled"];
 	if ([(NSMutableDictionary*)prefs writeToFile:kSettingsPath atomically:YES]) {
-		NSLog(@"[Hermes3] Prefs wrote successfully");
+		dl(@"[Hermes3] Prefs wrote successfully");
 	}
 	else {
-		NSLog(@"[Hermes3] Prefs didn't write successfully D:");
+		dl(@"[Hermes3] Prefs didn't write successfully D:");
 	}
 	//system("open /Applications/MobileSMS.app");
 }
@@ -154,18 +156,18 @@ void loadPrefs() {
 			CKMessage* smsMessage = [conversation newMessageWithComposition:composition addToConversation:YES];
 			[conversation sendMessage:smsMessage newComposition:YES];
 
-			if (debug) NSLog(@"[Hermes3] Touched send button, doing with IPC! :D");
-			if (debug) NSLog(@"[Hermes3] Conversation is %@", conversation);
-			if (debug) NSLog(@"[Hermes3] Message is %@", smsMessage);
-			if (debug) NSLog(@"[Hermes3] rawAddress is %@", rawAddress);
-			if (debug) NSLog(@"[Hermes3] Reply text is %@", text);
-    		if (debug) NSLog(@"Received message from SpringBoard: %@", message);
+			dl(@"[Hermes3] Touched send button, doing with IPC! :D");
+			dla(@"[Hermes3] Conversation is %@", conversation);
+			dla(@"[Hermes3] Message is %@", smsMessage);
+			dla(@"[Hermes3] rawAddress is %@", rawAddress);
+			dla(@"[Hermes3] Reply text is %@", text);
+    		dla(@"Received message from SpringBoard: %@", message);
 
     		return 0;
 		}];
 	}
 	else {
-		NSLog(@"[Hermes3] Not enabled, not doing anything");
+		dl(@"[Hermes3] Not enabled, not doing anything");
 	}
 	return %orig;
 }
@@ -175,10 +177,10 @@ void loadPrefs() {
 
 - (BOOL)postMessageReceivedIfNecessary {
 	if ([[prefs objectForKey:@"enabled"] boolValue]) {
-		NSLog(@"[Hermes3] recieved message");
+		dl(@"[Hermes3] recieved message");
 
 		sbMessage = self;
-		if (debug) NSLog(@"[Hermes3] sbMessage is %@", sbMessage);
+		dla(@"[Hermes3] sbMessage is %@", sbMessage);
 
 		prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
 
@@ -202,18 +204,18 @@ void loadPrefs() {
 		//[(NSMutableDictionary*)prefs setObject:@YES forKey:[NSString stringWithFormat:@"currentMessage"];
 
 		if ([(NSMutableDictionary*)prefs writeToFile:kSettingsPath atomically:YES]) {
-			NSLog(@"[Hermes3] Prefs wrote successfully");
+			dl(@"[Hermes3] Prefs wrote successfully");
 		}
 		else {
-			NSLog(@"[Hermes3] Prefs didn't write successfully D:");
+			dl(@"[Hermes3] Prefs didn't write successfully D:");
 		}
 
-		if (debug) NSLog(@"[Hermes3] Prefs dict is %@", prefs);
+		dla(@"[Hermes3] Prefs dict is %@", prefs);
 
 		notify_post("com.phillipt.hermes.received");
 	}
 	else {
-		NSLog(@"[Hermes3] Not enabled, not doing anything");
+		dl(@"[Hermes3] Not enabled, not doing anything");
 	}
 
 	return %orig;
@@ -231,11 +233,11 @@ void loadPrefs() {
 	CKMessage* smsMessage = [conversation newMessageWithComposition:composition addToConversation:YES];
 	[conversation sendMessage:smsMessage newComposition:YES];
 
-	if (debug) NSLog(@"[Hermes3] Touched send button");
-	if (debug) NSLog(@"[Hermes3] Conversation is %@", conversation);
-	if (debug) NSLog(@"[Hermes3] Message is %@", smsMessage);
-	if (debug) NSLog(@"[Hermes3] rawAddress is %@", rawAddress);
-	if (debug) NSLog(@"[Hermes3] Reply text is %@", text);
+	dl(@"[Hermes3] Touched send button");
+	dla(@"[Hermes3] Conversation is %@", conversation);
+	dla(@"[Hermes3] Message is %@", smsMessage);
+	dla(@"[Hermes3] rawAddress is %@", rawAddress);
+	dla(@"[Hermes3] Reply text is %@", text);
 }
 
 %end
@@ -250,38 +252,38 @@ void loadPrefs() {
 void quickReply() {
 	prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
 	SBApplication* currOpen = [[%c(SpringBoard) sharedApplication] _accessibilityFrontMostApplication];
-	NSLog(@"[Hermes3] Currently open application is %@", [currOpen bundleIdentifier]);
+	dla(@"[Hermes3] Currently open application is %@", [currOpen bundleIdentifier]);
 	
 	if (![[currOpen bundleIdentifier] isEqualToString:@"com.apple.MobileSMS"]) {
-		NSLog(@"[Hermes3] Messages was not open, writing NO to plist");
+		dl(@"[Hermes3] Messages was not open, writing NO to plist");
 		[(NSMutableDictionary*)prefs setObject:@NO forKey:@"mesOpen"];
 		if ([(NSMutableDictionary*)prefs writeToFile:kSettingsPath atomically:YES]) {
-			NSLog(@"[Hermes3] Prefs wrote successfully");
+			dl(@"[Hermes3] Prefs wrote successfully");
 		}
 		else {
-			NSLog(@"[Hermes3] Prefs didn't write successfully D:");
+			dl(@"[Hermes3] Prefs didn't write successfully D:");
 		}
 	}
 	else {
-		NSLog(@"[Hermes3] Messages WAS open, writing YES to plist");
+		dl(@"[Hermes3] Messages WAS open, writing YES to plist");
 		[(NSMutableDictionary*)prefs setObject:@YES forKey:@"mesOpen"];
 		//So heres another hackey solution since the message tried to show in both Messages and SpringBoard; we'll make it think it's already shown a message for this GUID.
 		[(NSMutableDictionary*)prefs setObject:@YES forKey:[NSString stringWithFormat:@"shownMessageForGUID:%@", prefs[@"guid"]]];
 		if ([(NSMutableDictionary*)prefs writeToFile:kSettingsPath atomically:YES]) {
-			NSLog(@"[Hermes3] Prefs wrote successfully");
+			dl(@"[Hermes3] Prefs wrote successfully");
 		}
 		else {
-			NSLog(@"[Hermes3] Prefs didn't write successfully D:");
+			dl(@"[Hermes3] Prefs didn't write successfully D:");
 		}
 	}
 
-	if (debug) NSLog(@"[Hermes3] prefs are %@", [prefs description]);
-	if (debug) NSLog(@"[Hermes3] isOutgoing is %@", prefs[@"isOutgoing"]);
-	NSLog(@"[Hermes3] Received message");
+	dla(@"[Hermes3] prefs are %@", [prefs description]);
+	dla(@"[Hermes3] isOutgoing is %@", prefs[@"isOutgoing"]);
+	dl(@"[Hermes3] Received message");
 	//if (![prefs[@"isOutgoing"] boolValue] && ![prefs[@"isFromMe"] boolValue]) {
 	if (![prefs[@"mesOpen"] boolValue]) {
 		for (CKMessagePart *part in [sbMessage parts]) {
-			if (debug) NSLog(@"[Hermes1] Part is %@", part);
+			dla(@"[Hermes1] Part is %@", part);
 		}
 		//if (!isPending) {
 		//if (!alertActive) {
@@ -292,26 +294,26 @@ void quickReply() {
 			UIAlertView* alert = [garb createQRAlertWithType:prefs[@"titleType"] name:prefs[@"displayName"] text:prefs[@"text"]];
 			//This is a (very hacky) check to see if we've already shown an alert for this message's GUID, to prevent the same alert popping up in SpringBoard and Messages.
 			if (![prefs objectForKey:[NSString stringWithFormat:@"shownMessageForGUID:%@", prefs[@"guid"]]]) {
-				NSLog(@"[Hermes3] We have not already shown an alert for this GUID. Show it!");
+				dl(@"[Hermes3] We have not already shown an alert for this GUID. Show it!");
 				[(NSMutableDictionary*)prefs setObject:@YES forKey:[NSString stringWithFormat:@"shownMessageForGUID:%@", prefs[@"guid"]]];
 				if ([(NSMutableDictionary*)prefs writeToFile:kSettingsPath atomically:YES]) {
-					NSLog(@"[Hermes3] Prefs wrote successfully");
+					dl(@"[Hermes3] Prefs wrote successfully");
 				}
 				else {
-					NSLog(@"[Hermes3] Prefs didn't write successfully D:");
+					dl(@"[Hermes3] Prefs didn't write successfully D:");
 				}
-				NSLog(@"[Hermes3] Messages was not open, showing alert");
+				dl(@"[Hermes3] Messages was not open, showing alert");
 				[alert show];
 			}
 			else {
-				NSLog(@"[Hermes3] We've already shown a message for that GUID!! >:(");
+				dl(@"[Hermes3] We've already shown a message for that GUID!! >:(");
 			}
-			NSLog(@"[Hermes3] %@ from %@: %@", prefs[@"titleType"], prefs[@"displayName"], prefs[@"text"]);
+			if (debug) NSLog(@"[Hermes3] %@ from %@: %@", prefs[@"titleType"], prefs[@"displayName"], prefs[@"text"]);
 
 			//if (debug) NSLog(@"[Hermes3] Prefs dict is %@", prefs);
-			NSLog(@"[Hermes3] Prefs dict is %@", prefs);
+			dla(@"[Hermes3] Prefs dict is %@", prefs);
 			//NSLog(@"[Hermes3] Did not have pending alert");
-			NSLog(@"[Hermes3] Is showing alert? %@", isPending ? @"True":@"False");
+			dla(@"[Hermes3] Is showing alert? %@", isPending ? @"True":@"False");
 			isPending = YES;
 		//}
 		//else {
@@ -321,7 +323,7 @@ void quickReply() {
 		//}
 	}
 	else {
-		NSLog(@"[Hermes3] Messages WAS open, not showing alert");
+		dl(@"[Hermes3] Messages WAS open, not showing alert");
 	}
 	//}
 	//else {
