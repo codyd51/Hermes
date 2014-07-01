@@ -19,37 +19,10 @@ NSString* reply;
 UITextField* responseField;
 NSMutableDictionary* prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
 
-@interface CKConversationList (Hermes)
--(void)sendTheMessage;
-@end
-
-@implementation CKConversationList (Hermes)
--(void)sendTheMessage {
-	CKConversationList* conversationList = [CKConversationList sharedConversationList];
-	CKConversation* conversation = [conversationList conversationForExistingChatWithGUID:prefs[@"guid"]];
-	reply = responseField.text;
-	NSAttributedString* text = [[NSAttributedString alloc] initWithString:reply];
-	CKComposition* composition = [[CKComposition alloc] initWithText:text subject:nil];
-	CKMessage* smsMessage = [conversation newMessageWithComposition:composition addToConversation:YES];
-	[conversation sendMessage:smsMessage newComposition:YES];
-
-	if (debug) NSLog(@"[Hermes3] Touched send button, doing from CKConversationList");
-	if (debug) NSLog(@"[Hermes3] rawAddress is %@", rawAddress);
-	if (debug) NSLog(@"[Hermes3] conversationList is %@", conversationList);
-	if (debug) NSLog(@"[Hermes3] conversationList.conversations is %@", [conversationList conversations]);
-	if (debug) NSLog(@"[Hermes3] conversationList description is %@", [conversationList description]);
-	if (debug) NSLog(@"[Hermes3] Conversation is %@", conversation);
-	if (debug) NSLog(@"[Hermes3] Message is %@", smsMessage);
-	if (debug) NSLog(@"[Hermes3] rawAddress is %@", rawAddress);
-	if (debug) NSLog(@"[Hermes3] Reply text is %@", text);
-}
-@end
-
 @interface GarbClass : NSObject <UIAlertViewDelegate>
 -(BOOL)hasPendingAlert;
 -(UIAlertView*)alertFromCKIMMessage:(CKIMMessage*)obj andType:(NSString*)type withPart:(CKTextMessagePart*)text;
 -(UIAlertView*)createQRAlertWithType:(NSString*)type name:(NSString*)name text:(NSString*)text;
--(void)explicitShow:(UIAlertView*)alert;
 @end
 @implementation GarbClass
 //This code does not work on iOS 7. Apparantly, no references back to UIAlertView are kept in the keyWindow. Tl;Dr this code is useless, hence the 'isPending' variable. I'm leaving it here in case anyone wants to figure out how to make it work
@@ -90,9 +63,6 @@ NSMutableDictionary* prefs = [NSMutableDictionary dictionaryWithContentsOfFile:k
 		alert.tintColor = [UIColor blueColor];
 	}
 	return alert;
-}
--(void)explicitShow:(UIAlertView*)alert {
-	[alert show];
 }
 -(UIAlertView*)alertFromCKIMMessage:(CKIMMessage*)obj andType:(NSString*)type withPart:(CKTextMessagePart*)text {
 	UIAlertView* alert = [self createQRAlertWithType:type name:obj.sender.name text:text.text.string];
@@ -278,13 +248,38 @@ void loadPrefs() {
 @end
 
 void quickReply() {
+	prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
+	SBApplication* currOpen = [[%c(SpringBoard) sharedApplication] _accessibilityFrontMostApplication];
+	NSLog(@"[Hermes3] Currently open application is %@", [currOpen bundleIdentifier]);
+	
+	if (![[currOpen bundleIdentifier] isEqualToString:@"com.apple.MobileSMS"]) {
+		NSLog(@"[Hermes3] Messages was not open, writing NO to plist");
+		[(NSMutableDictionary*)prefs setObject:@NO forKey:@"mesOpen"];
+		if ([(NSMutableDictionary*)prefs writeToFile:kSettingsPath atomically:YES]) {
+			NSLog(@"[Hermes3] Prefs wrote successfully");
+		}
+		else {
+			NSLog(@"[Hermes3] Prefs didn't write successfully D:");
+		}
+	}
+	else {
+		NSLog(@"[Hermes3] Messages WAS open, writing YES to plist");
+		[(NSMutableDictionary*)prefs setObject:@YES forKey:@"mesOpen"];
+		//So heres another hackey solution since the message tried to show in both Messages and SpringBoard; we'll make it think it's already shown a message for this GUID.
+		[(NSMutableDictionary*)prefs setObject:@YES forKey:[NSString stringWithFormat:@"shownMessageForGUID:%@", prefs[@"guid"]]];
+		if ([(NSMutableDictionary*)prefs writeToFile:kSettingsPath atomically:YES]) {
+			NSLog(@"[Hermes3] Prefs wrote successfully");
+		}
+		else {
+			NSLog(@"[Hermes3] Prefs didn't write successfully D:");
+		}
+	}
+
 	if (debug) NSLog(@"[Hermes3] prefs are %@", [prefs description]);
 	if (debug) NSLog(@"[Hermes3] isOutgoing is %@", prefs[@"isOutgoing"]);
 	NSLog(@"[Hermes3] Received message");
 	//if (![prefs[@"isOutgoing"] boolValue] && ![prefs[@"isFromMe"] boolValue]) {
-	SBApplication* currOpen = [[%c(SpringBoard) sharedApplication] _accessibilityFrontMostApplication];
-	NSLog(@"[Hermes3] Currently open application is %@", [currOpen bundleIdentifier]);
-	if (![[currOpen bundleIdentifier] isEqualToString:@"com.apple.MobileSMS"]) {
+	if (![prefs[@"mesOpen"] boolValue]) {
 		for (CKMessagePart *part in [sbMessage parts]) {
 			if (debug) NSLog(@"[Hermes1] Part is %@", part);
 		}
@@ -292,7 +287,6 @@ void quickReply() {
 		//if (!alertActive) {
 		//if (![[prefs objectForKey:@"alertActive"] boolValue]) {
 			//rawAddress = sbMessage.sender.rawAddress;
-			prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
 
 			rawAddress = prefs[@"rawAddress"];
 			UIAlertView* alert = [garb createQRAlertWithType:prefs[@"titleType"] name:prefs[@"displayName"] text:prefs[@"text"]];
@@ -333,8 +327,8 @@ void quickReply() {
 	//else {
 	//	NSLog(@"[Hermes3] Message was from me, not performing any actions");
 	//}
-	SBApplication *app = [[%c(SBApplicationController) sharedInstance] applicationWithDisplayIdentifier:@"com.apple.MobileSMS"];
-	BKSProcessAssertion *keepAlive = [[BKSProcessAssertion alloc] initWithPID:[app pid] flags:0xF reason:7 name:@"epichax" withHandler:nil];
+	SBApplication *mesApp = [[%c(SBApplicationController) sharedInstance] applicationWithDisplayIdentifier:@"com.apple.MobileSMS"];
+	BKSProcessAssertion *keepAlive = [[BKSProcessAssertion alloc] initWithPID:[mesApp pid] flags:0xF reason:7 name:@"epichax" withHandler:nil];
 }
 
 %ctor {
