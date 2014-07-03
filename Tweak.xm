@@ -281,49 +281,55 @@ void quickReply() {
 	dla(@"[Hermes3] isOutgoing is %@", prefs[@"isOutgoing"]);
 	dl(@"[Hermes3] Received message");
 	//if (![prefs[@"isOutgoing"] boolValue] && ![prefs[@"isFromMe"] boolValue]) {
-	if (![prefs[@"mesOpen"] boolValue]) {
-		for (CKMessagePart *part in [sbMessage parts]) {
-			dla(@"[Hermes1] Part is %@", part);
-		}
-		//if (!isPending) {
-		//if (!alertActive) {
-		//if (![[prefs objectForKey:@"alertActive"] boolValue]) {
-			//rawAddress = sbMessage.sender.rawAddress;
 
-			rawAddress = prefs[@"rawAddress"];
-			UIAlertView* alert = [garb createQRAlertWithType:prefs[@"titleType"] name:prefs[@"displayName"] text:prefs[@"text"]];
-			//This is a (very hacky) check to see if we've already shown an alert for this message's GUID, to prevent the same alert popping up in SpringBoard and Messages.
-			if (![prefs objectForKey:[NSString stringWithFormat:@"shownMessageForGUID:%@", prefs[@"guid"]]]) {
-				dl(@"[Hermes3] We have not already shown an alert for this GUID. Show it!");
-				[(NSMutableDictionary*)prefs setObject:@YES forKey:[NSString stringWithFormat:@"shownMessageForGUID:%@", prefs[@"guid"]]];
-				if ([(NSMutableDictionary*)prefs writeToFile:kSettingsPath atomically:YES]) {
-					dl(@"[Hermes3] Prefs wrote successfully");
+	if (![[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.MobileSMS"]) {
+		if (![prefs[@"mesOpen"] boolValue]) {
+			for (CKMessagePart *part in [sbMessage parts]) {
+				dla(@"[Hermes1] Part is %@", part);
+			}
+			//if (!isPending) {
+			//if (!alertActive) {
+			if (![[prefs objectForKey:@"alertActive"] boolValue]) {
+				//rawAddress = sbMessage.sender.rawAddress;
+
+				rawAddress = prefs[@"rawAddress"];
+				UIAlertView* alert = [garb createQRAlertWithType:prefs[@"titleType"] name:prefs[@"displayName"] text:prefs[@"text"]];
+				//This is a (very hacky) check to see if we've already shown an alert for this message's GUID, to prevent the same alert popping up in SpringBoard and Messages.
+				if (![prefs objectForKey:[NSString stringWithFormat:@"shownMessageForGUID:%@", prefs[@"guid"]]]) {
+					dl(@"[Hermes3] We have not already shown an alert for this GUID. Show it!");
+					[(NSMutableDictionary*)prefs setObject:@YES forKey:[NSString stringWithFormat:@"shownMessageForGUID:%@", prefs[@"guid"]]];
+					if ([(NSMutableDictionary*)prefs writeToFile:kSettingsPath atomically:YES]) {
+						dl(@"[Hermes3] Prefs wrote successfully");
+					}
+					else {
+						dl(@"[Hermes3] Prefs didn't write successfully D:");
+					}
+					dl(@"[Hermes3] Messages was not open, showing alert");
+					[alert show];
 				}
 				else {
-					dl(@"[Hermes3] Prefs didn't write successfully D:");
+					dl(@"[Hermes3] We've already shown a message for that GUID!! >:(");
 				}
-				dl(@"[Hermes3] Messages was not open, showing alert");
-				[alert show];
+				if (debug) NSLog(@"[Hermes3] %@ from %@: %@", prefs[@"titleType"], prefs[@"displayName"], prefs[@"text"]);
+
+				//if (debug) NSLog(@"[Hermes3] Prefs dict is %@", prefs);
+				dla(@"[Hermes3] Prefs dict is %@", prefs);
+				//NSLog(@"[Hermes3] Did not have pending alert");
+				dla(@"[Hermes3] Is showing alert? %@", isPending ? @"True":@"False");
+				isPending = YES;
 			}
 			else {
-				dl(@"[Hermes3] We've already shown a message for that GUID!! >:(");
+				//isPending = NO;
+				NSLog(@"[Hermes3] Had pending alert");
+				NSLog(@"[Hermes3] Is showing alert? %@", isPending ? @"True":@"False");
 			}
-			if (debug) NSLog(@"[Hermes3] %@ from %@: %@", prefs[@"titleType"], prefs[@"displayName"], prefs[@"text"]);
-
-			//if (debug) NSLog(@"[Hermes3] Prefs dict is %@", prefs);
-			dla(@"[Hermes3] Prefs dict is %@", prefs);
-			//NSLog(@"[Hermes3] Did not have pending alert");
-			dla(@"[Hermes3] Is showing alert? %@", isPending ? @"True":@"False");
-			isPending = YES;
-		//}
-		//else {
-			//isPending = NO;
-		//	NSLog(@"[Hermes3] Had pending alert");
-		//	NSLog(@"[Hermes3] Is showing alert? %@", isPending ? @"True":@"False");
-		//}
+		}
+		else {
+			dl(@"[Hermes3] Messages WAS open, not showing alert");
+		}
 	}
 	else {
-		dl(@"[Hermes3] Messages WAS open, not showing alert");
+		dl(@"[Hermes3] Messages was open brah :(");
 	}
 	//}
 	//else {

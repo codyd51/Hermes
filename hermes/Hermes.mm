@@ -356,7 +356,7 @@ UIColor* color = [UIColor colorWithRed:200/255.0f green:200/255.0f blue:200/255.
 	
 	else
 		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[@"https://mobile.twitter.com/" stringByAppendingString:user]]];
-	return nil;
+	return 0;
 }
 
 - (void)viewDidAppear:(BOOL)arg1 {
@@ -382,7 +382,7 @@ UIColor* color = [UIColor colorWithRed:200/255.0f green:200/255.0f blue:200/255.
 	
 	else
 		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[@"https://mobile.twitter.com/" stringByAppendingString:user]]];
-	return nil;
+	return 0;
 }
 
 - (void)viewDidAppear:(BOOL)arg1 {
