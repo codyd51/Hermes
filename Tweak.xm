@@ -306,6 +306,7 @@ void quickReply() {
 					}
 					dl(@"[Hermes3] Messages was not open, showing alert");
 					[alert show];
+					dl(@"[Hermes3] ALL CHECKS SUCCEEDED showing alert...");
 				}
 				else {
 					dl(@"[Hermes3] We've already shown a message for that GUID!! >:(");
