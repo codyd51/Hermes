@@ -1,0 +1,10 @@
+{
+    entry = {
+	bundle = Hermes;
+	cell = PSLinkCell;
+	detail = HermesListController;
+	icon = Hermes.png;
+	isController = 1;
+	label = Hermes;
+    };
+}
