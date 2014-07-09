@@ -116,12 +116,10 @@ CoreDataConversationManager* manager;
 				@"reply" : reply,
 				@"rawAddress" : prefs[@"rawAddress"]
 			};
-/*
+
 			[OBJCIPC sendMessageToAppWithIdentifier:@"com.apple.MobileSMS" messageName:@"com.phillipt.hermes.ipc" dictionary:responseInfoDict replyHandler:^(NSDictionary *response) {
     			dla(@"Received reply from MobileSMS: %@", response);
 			}];
-*/
-			NSDictionary *reply = [OBJCIPC sendMessageToSpringBoardWithMessageName:@"com.phillipt.hermes.ipc" dictionary:responseInfoDict];
 		}
 	}
 	else {
