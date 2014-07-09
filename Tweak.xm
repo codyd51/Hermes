@@ -176,11 +176,13 @@ void loadPrefs() {
 
 %hook UIAlertView 
 - (void)show {
-	%orig; 
 	//alertActive = YES;
 	prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
 	[(NSMutableDictionary*)prefs setObject:@YES forKey:@"alertActive"];
 	[(NSMutableDictionary*)prefs writeToFile:kSettingsPath atomically:YES];
+	if (![[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.MobileSMS"]) {
+		%orig;
+	}
 } 
 %end
 
@@ -419,7 +421,7 @@ void quickReply() {
 	dl(@"[Hermes3] Received message");
 	//if (![prefs[@"isOutgoing"] boolValue] && ![prefs[@"isFromMe"] boolValue]) {
 
-	//if (![[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.MobileSMS"]) {
+	if (![[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.MobileSMS"]) {
 		//if (![prefs[@"mesOpen"] boolValue]) {
 			for (CKMessagePart *part in [sbMessage parts]) {
 				dla(@"[Hermes1] Part is %@", part);
@@ -465,10 +467,10 @@ void quickReply() {
 		//else {
 		//	dl(@"[Hermes3] Messages WAS open, not showing alert");
 		//}
-	//}
-	//else {
-	//	dl(@"[Hermes3] Messages was open brah :(");
-	//}
+	}
+	else {
+		dl(@"[Hermes3] Messages was open brah :(");
+	}
 	//}
 	//else {
 	//	NSLog(@"[Hermes3] Message was from me, not performing any actions");
