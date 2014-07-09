@@ -18,6 +18,6 @@ TODO
 
 DONE - * Possible Kik integration, if I ever figure out how to send a kik message programmatically ( :( )
 
-* Refactor into subprojects
+Partially done - * Refactor into subprojects
 
 * Don't show messages if they're outgoing
