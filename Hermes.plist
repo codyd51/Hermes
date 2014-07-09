@@ -1,5 +1,5 @@
 Filter = {
   Executables = ("imagent");
-  Bundles = ( "com.apple.MobileSMS", "com.apple.springboard", "com.apple.imagent" );
+  Bundles = ( "com.apple.springboard", "com.apple.imagent" );
   Mode = "Any";
 };
