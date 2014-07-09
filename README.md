@@ -16,6 +16,8 @@ TODO
 
 * Fix messages popping up over one another
 
-* Possible Kik integration, if I ever figure out how to send a kik message programmatically ( :( )
+DONE - * Possible Kik integration, if I ever figure out how to send a kik message programmatically ( :( )
+
+* Refactor into subprojects
 
 * Don't show messages if they're outgoing
