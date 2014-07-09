@@ -127,8 +127,43 @@ CoreDataConversationManager* manager;
 	}
 }
 @end
+@interface KikGarbClass : GarbClass <UIAlertViewDelegate>
+@end
+@implementation KikGarbClass
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	isPending = NO;
+	//alertActive = NO;
+	prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
+	[(NSMutableDictionary*)prefs setObject:@NO forKey:@"alertActive"];
+	[(NSMutableDictionary*)prefs writeToFile:kSettingsPath atomically:YES];
+
+	if (buttonIndex != [alertView cancelButtonIndex]) {
+		if (buttonIndex != 1) {
+			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"kik://"]];
+		}
+		else {
+			[(NSMutableDictionary*)prefs setObject:responseField.text forKey:@"reply"];
+			[(NSMutableDictionary*)prefs writeToFile:kSettingsPath atomically:YES];
+
+			reply = responseField.text;
+			NSDictionary* responseInfoDict = @{
+				@"reply" : reply,
+				@"displayName" : prefs[@"displayName"]
+			};
+
+			[OBJCIPC sendMessageToAppWithIdentifier:@"com.kik.chat" messageName:@"com.phillipt.hermes.kik" dictionary:responseInfoDict replyHandler:^(NSDictionary *response) {
+    			dla(@"Received reply from Kik: %@", response);
+			}];
+		}
+	}
+	else {
+		isPending = NO;
+	}
+}
+@end
 
 GarbClass* garb = [[GarbClass alloc] init];
+KikGarbClass* kikGarb = [[KikGarbClass alloc] init];
 
 void loadPrefs() {
 	prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
@@ -237,7 +272,7 @@ void loadPrefs() {
 			dla(@"[Hermes3 - Kik] Received message from SpringBoard: %@", message);
 			userHelper = [[%c(KikUserHelper) alloc] initWithManagedObjectContext:storage.managedObjectContext];
 			chatHelper = [[%c(KikChatHelper) alloc] initWithManagedObjectContext:storage.managedObjectContext];
-			user = [userHelper userWithUsername:message[@"kikReplyTo"]];
+			user = [userHelper userWithUsername:message[@"displayName"]];
 			chat = [chatHelper chatForUser:user];
 			conversation = [[%c(CoreDataConversation) alloc] initWithKikChat:chat];
 			[manager sendTextMessage:message[@"reply"] toConversation:conversation];
@@ -337,7 +372,11 @@ void loadPrefs() {
 
 	NSMutableDictionary* kikMessage = [[NSMutableDictionary alloc] init];
 	[kikMessage setObject:@"Kik" forKey:@"titleType"];
-	[kikMessage setObject:[userInfo objectForKey:@"chatUserJid"] forKey:@"displayName"];
+	NSString* dispNameFull = [userInfo objectForKey:@"chatUserJid"];
+	NSRange range= [dispNameFull rangeOfString: @"@" options: NSBackwardsSearch];
+	NSString* displayName= [dispNameFull substringToIndex:range.location];
+
+	[kikMessage setObject:displayName forKey:@"displayName"];
 	[kikMessage setObject:[userInfo objectForKey:@"messageContent"] forKey:@"text"];
 
 	//if ([[prefs objectForKey:@"enabled"] boolValue]) {
@@ -523,7 +562,7 @@ void kikReply() {
 				//rawAddress = sbMessage.sender.rawAddress;
 
 				rawAddress = prefs[@"rawAddress"];
-				UIAlertView* alert = [garb createQRAlertWithType:prefs[@"titleType"] name:prefs[@"displayName"] text:prefs[@"text"]];
+				UIAlertView* alert = [kikGarb createQRAlertWithType:prefs[@"titleType"] name:prefs[@"displayName"] text:prefs[@"text"]];
 				//This is a (very hacky) check to see if we've already shown an alert for this message's GUID, to prevent the same alert popping up in SpringBoard and Messages.
 				//if (![prefs objectForKey:[NSString stringWithFormat:@"shownMessageForGUID:%@", prefs[@"guid"]]]) {
 					dl(@"[Hermes3 - Kik] We have not already shown an alert for this GUID. Show it!");
