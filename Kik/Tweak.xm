@@ -76,17 +76,21 @@ KikGarbClass* kikGarb = [[%c(KikGarbClass) alloc] init];
 			[OBJCIPC registerIncomingMessageFromSpringBoardHandlerForMessageName:@"com.phillipt.hermes.kik" handler:^NSDictionary *(NSDictionary *message) {
 				dla(@"[Hermes3 - Kik] Received message from SpringBoard: %@", message);
 				userHelper = [[%c(KikUserHelper) alloc] initWithManagedObjectContext:storage.managedObjectContext];
+				NSLog(@"[Hermes3 - Kik] managedObjectContext is %@", storage.managedObjectContext);
+				dla(@"[Hermes3 - Kik] UserHelper is %@", userHelper);
+				NSLog(@"[Hermes3 - Kik] allUsers %@", [userHelper allUsers]);
 				chatHelper = [[%c(KikChatHelper) alloc] initWithManagedObjectContext:storage.managedObjectContext];
-				user = [userHelper userWithUsername:message[@"displayName"]];
+				dla(@"[Hermes3 - Kik] ChatHelper is %@", chatHelper);
+				NSString* respUserName = [NSString stringWithFormat:@"%@", message[@"kikUser"]];
+				//user = [userHelper userWithUsername:respUserName];
+				user = [userHelper userWithJid:message[@"jid"]];
+				dla(@"[Hermes3 - Kik] User is %@", user);
 				chat = [chatHelper chatForUser:user];
+				dla(@"[Hermes3 - Kik] Chat is is %@", chat);
 				conversation = [[%c(CoreDataConversation) alloc] initWithKikChat:chat];
 				[manager sendTextMessage:message[@"reply"] toConversation:conversation];
 
 				dl(@"[Hermes3 - Kik] Sending Kik message! :D");
-				dla(@"[Hermes3 - Kik] UserHelper is %@", userHelper);
-				dla(@"[Hermes3 - Kik] ChatHelper is %@", chatHelper);
-				dla(@"[Hermes3 - Kik] User is %@", user);
-				dla(@"[Hermes3 - Kik] Chat is is %@", chat);
 
     			return 0;
 			}];
@@ -111,10 +115,20 @@ KikGarbClass* kikGarb = [[%c(KikGarbClass) alloc] init];
 	[kikMessage setObject:@"Kik" forKey:@"titleType"];
 	NSString* dispNameFull = [userInfo objectForKey:@"chatUserJid"];
 	NSRange range= [dispNameFull rangeOfString: @"@" options: NSBackwardsSearch];
-	NSString* displayName= [dispNameFull substringToIndex:range.location];
+	//NSString* displayName= [dispNameFull substringToIndex:range.location];
+
+	KikUserHelper* helper = [[%c(KikUserHelper) alloc] initWithManagedObjectContext:storage.managedObjectContext];
+	KikUser* user = [helper userWithJid:[userInfo objectForKey:@"chatUserJid"]];
+	NSLog(@"[Hermes3 - Kik] dispNameFull is %@", dispNameFull);
+	NSLog(@"[Hermes3 - Kik] user is %@", user);
+	NSString* displayName = user.nameForDisplay;
 
 	[kikMessage setObject:displayName forKey:@"displayName"];
+	[kikMessage setObject:user.username forKey:@"kikUser"];
+	[kikMessage setObject:[userInfo objectForKey:@"chatUserJid"] forKey:@"jid"];
 	[kikMessage setObject:[userInfo objectForKey:@"messageContent"] forKey:@"text"];
+
+	NSLog(@"[Hermes3 - Kik] kikMessage is %@", kikMessage);
 
 	//if ([[prefs objectForKey:@"enabled"] boolValue]) {
 		dl(@"[Hermes3 - Kik] recieved kik message");

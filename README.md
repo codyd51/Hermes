@@ -20,4 +20,6 @@ DONE - * Possible Kik integration, if I ever figure out how to send a kik messag
 
 DONE - * Refactor into subprojects
 
+* WhatsApp integration
+
 * Don't show messages if they're outgoing

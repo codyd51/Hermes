@@ -134,7 +134,9 @@ NSMutableDictionary* prefs = [NSMutableDictionary dictionaryWithContentsOfFile:k
 			reply = responseField.text;
 			NSDictionary* responseInfoDict = @{
 				@"reply" : reply,
-				@"displayName" : prefs[@"displayName"]
+				@"displayName" : prefs[@"displayName"],
+				@"jid" : prefs[@"jid"],
+				@"kikUser" : prefs[@"kikUser"]
 			};
 
 			[OBJCIPC sendMessageToAppWithIdentifier:@"com.kik.chat" messageName:@"com.phillipt.hermes.kik" dictionary:responseInfoDict replyHandler:^(NSDictionary *response) {
@@ -175,6 +177,8 @@ void loadPrefs() {
     	[(NSMutableDictionary*)prefs setObject:message[@"titleType"] forKey:@"titleType"];
     	[(NSMutableDictionary*)prefs setObject:message[@"displayName"] forKey:@"displayName"];
     	[(NSMutableDictionary*)prefs setObject:message[@"text"] forKey:@"text"];
+    	[(NSMutableDictionary*)prefs setObject:message[@"jid"] forKey:@"jid"];
+    	[(NSMutableDictionary*)prefs setObject:message[@"kikUser"] forKey:@"kikUser"];
     	if ([(NSMutableDictionary*)prefs writeToFile:kSettingsPath atomically:YES]) {
 			dl(@"[Hermes3] Prefs wrote successfully");
 		}

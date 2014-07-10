@@ -161,11 +161,8 @@ void quickReply() {
 	dl(@"[Hermes3] Received message");
 	//if (![prefs[@"isOutgoing"] boolValue] && ![prefs[@"isFromMe"] boolValue]) {
 
-	if (![[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.MobileSMS"]) {
+	if (![[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.MobileSMS"] && ![[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.springboard"]) {
 		//if (![prefs[@"mesOpen"] boolValue]) {
-			for (CKMessagePart *part in [sbMessage parts]) {
-				dla(@"[Hermes1] Part is %@", part);
-			}
 			//if (!isPending) {
 			//if (!alertActive) {
 			//if (![[prefs objectForKey:@"alertActive"] boolValue]) {
