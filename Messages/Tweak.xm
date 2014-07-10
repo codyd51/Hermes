@@ -161,7 +161,7 @@ void quickReply() {
 	dl(@"[Hermes3] Received message");
 	//if (![prefs[@"isOutgoing"] boolValue] && ![prefs[@"isFromMe"] boolValue]) {
 
-	if (![[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.MobileSMS"] && ![[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.springboard"]) {
+	//if (![[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.MobileSMS"] && ![[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.springboard"]) {
 		//if (![prefs[@"mesOpen"] boolValue]) {
 			//if (!isPending) {
 			//if (!alertActive) {
@@ -169,23 +169,28 @@ void quickReply() {
 				//rawAddress = sbMessage.sender.rawAddress;
 
 				rawAddress = prefs[@"rawAddress"];
-				UIAlertView* alert = [garb createQRAlertWithType:prefs[@"titleType"] name:prefs[@"displayName"] text:prefs[@"text"]];
-				//This is a (very hacky) check to see if we've already shown an alert for this message's GUID, to prevent the same alert popping up in SpringBoard and Messages.
-				if (![prefs objectForKey:[NSString stringWithFormat:@"shownMessageForGUID:%@", prefs[@"guid"]]]) {
-					dl(@"[Hermes3] We have not already shown an alert for this GUID. Show it!");
-					[(NSMutableDictionary*)prefs setObject:@YES forKey:[NSString stringWithFormat:@"shownMessageForGUID:%@", prefs[@"guid"]]];
-					if ([(NSMutableDictionary*)prefs writeToFile:kSettingsPath atomically:YES]) {
-						dl(@"[Hermes3] Prefs wrote successfully");
+				if (![prefs[@"alertActive"] boolValue]) {
+					UIAlertView* alert = [garb createQRAlertWithType:prefs[@"titleType"] name:prefs[@"displayName"] text:prefs[@"text"]];
+					//This is a (very hacky) check to see if we've already shown an alert for this message's GUID, to prevent the same alert popping up in SpringBoard and Messages.
+					if (![prefs objectForKey:[NSString stringWithFormat:@"shownMessageForGUID:%@", prefs[@"guid"]]]) {
+						dl(@"[Hermes3] We have not already shown an alert for this GUID. Show it!");
+						[(NSMutableDictionary*)prefs setObject:@YES forKey:[NSString stringWithFormat:@"shownMessageForGUID:%@", prefs[@"guid"]]];
+						if ([(NSMutableDictionary*)prefs writeToFile:kSettingsPath atomically:YES]) {
+							dl(@"[Hermes3] Prefs wrote successfully");
+						}
+						else {
+							dl(@"[Hermes3] Prefs didn't write successfully D:");
+						}
+						dl(@"[Hermes3] Messages was not open, showing alert");
+						[alert show];
+						dl(@"[Hermes3] ALL CHECKS SUCCEEDED showing alert...");
 					}
 					else {
-						dl(@"[Hermes3] Prefs didn't write successfully D:");
+						dl(@"[Hermes3] We've already shown a message for that GUID!! >:(");
 					}
-					dl(@"[Hermes3] Messages was not open, showing alert");
-					[alert show];
-					dl(@"[Hermes3] ALL CHECKS SUCCEEDED showing alert...");
 				}
 				else {
-					dl(@"[Hermes3] We've already shown a message for that GUID!! >:(");
+					NSLog(@"[Hermes3] alertActive was true");
 				}
 				if (debug) NSLog(@"[Hermes3] %@ from %@: %@", prefs[@"titleType"], prefs[@"displayName"], prefs[@"text"]);
 
@@ -204,10 +209,10 @@ void quickReply() {
 		//else {
 		//	dl(@"[Hermes3] Messages WAS open, not showing alert");
 		//}
-	}
-	else {
-		dl(@"[Hermes3] Messages was open brah :(");
-	}
+	//}
+	//else {
+	//	dl(@"[Hermes3] Messages was open brah :(");
+	//}
 	//}
 	//else {
 	//	NSLog(@"[Hermes3] Message was from me, not performing any actions");

@@ -188,23 +188,28 @@ void kikReply() {
 				//rawAddress = sbMessage.sender.rawAddress;
 
 				rawAddress = prefs[@"rawAddress"];
-				UIAlertView* alert = [kikGarb createQRAlertWithType:prefs[@"titleType"] name:prefs[@"displayName"] text:prefs[@"text"]];
-				//This is a (very hacky) check to see if we've already shown an alert for this message's GUID, to prevent the same alert popping up in SpringBoard and Messages.
-				//if (![prefs objectForKey:[NSString stringWithFormat:@"shownMessageForGUID:%@", prefs[@"guid"]]]) {
-					dl(@"[Hermes3 - Kik] We have not already shown an alert for this GUID. Show it!");
-					[(NSMutableDictionary*)prefs setObject:@YES forKey:[NSString stringWithFormat:@"shownMessageForGUID:%@", prefs[@"guid"]]];
-					if ([(NSMutableDictionary*)prefs writeToFile:kSettingsPath atomically:YES]) {
-						dl(@"[Hermes3 - Kik] Prefs wrote successfully");
-					}
-					else {
-						dl(@"[Hermes3 - Kik] Prefs didn't write successfully D:");
-					}
-					dl(@"[Hermes3 - Kik] Messages was not open, showing alert");
-					[alert show];
-					dl(@"[Hermes3 - Kik] ALL CHECKS SUCCEEDED showing alert...");
+				//if (!prefs[@"alertActive"]) {
+					UIAlertView* alert = [kikGarb createQRAlertWithType:prefs[@"titleType"] name:prefs[@"displayName"] text:prefs[@"text"]];
+					//This is a (very hacky) check to see if we've already shown an alert for this message's GUID, to prevent the same alert popping up in SpringBoard and Kik.
+					//if (![prefs objectForKey:[NSString stringWithFormat:@"shownMessageForGUID:%@", prefs[@"guid"]]]) {
+						dl(@"[Hermes3 - Kik] We have not already shown an alert for this GUID. Show it!");
+						[(NSMutableDictionary*)prefs setObject:@YES forKey:[NSString stringWithFormat:@"shownMessageForGUID:%@", prefs[@"guid"]]];
+						if ([(NSMutableDictionary*)prefs writeToFile:kSettingsPath atomically:YES]) {
+							dl(@"[Hermes3 - Kik] Prefs wrote successfully");
+						}
+						else {
+							dl(@"[Hermes3 - Kik] Prefs didn't write successfully D:");
+						}
+						dl(@"[Hermes3 - Kik] Kik was not open, showing alert");
+						[alert show];
+						dl(@"[Hermes3 - Kik] ALL CHECKS SUCCEEDED showing alert...");
+					//}
+					//else {
+					//	dl(@"[Hermes3 - Kik] We've already shown a message for that GUID!! >:(");
+					//}
 				//}
 				//else {
-				//	dl(@"[Hermes3 - Kik] We've already shown a message for that GUID!! >:(");
+				//	NSLog(@"[Hermes - Kik] Alert was active");
 				//}
 				if (debug) NSLog(@"[Hermes3 - Kik] %@ from %@: %@", prefs[@"titleType"], prefs[@"displayName"], prefs[@"text"]);
 

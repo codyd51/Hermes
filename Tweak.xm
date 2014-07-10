@@ -33,6 +33,13 @@ NSMutableDictionary* prefs = [NSMutableDictionary dictionaryWithContentsOfFile:k
 @interface NSConcreteNotification : NSObject
 @property NSDictionary* userInfo;
 @end
+@interface UIApplication (Hermes)
+- (BOOL)launchApplicationWithIdentifier:(id)arg1 suspended:(BOOL)arg2;
+-(id)_accessibilityFrontMostApplication;
+@end
+@interface SBApplication (Hermes)
+-(NSString*)bundleIdentifier;
+@end
 @interface GarbClass : NSObject <UIAlertViewDelegate>
 -(BOOL)hasPendingAlert;
 -(UIAlertView*)alertFromCKIMMessage:(CKIMMessage*)obj andType:(NSString*)type withPart:(CKTextMessagePart*)text;
@@ -67,7 +74,8 @@ NSMutableDictionary* prefs = [NSMutableDictionary dictionaryWithContentsOfFile:k
 	[alert setAlertViewStyle:UIAlertViewStylePlainTextInput];
 	responseField = [alert textFieldAtIndex:0];
 	[alert textFieldAtIndex:0].autocapitalizationType = UITextAutocapitalizationTypeSentences;
-	[alert textFieldAtIndex:0].autocorrectionType = YES;
+	[alert textFieldAtIndex:0].autocorrectionType = UITextAutocorrectionTypeYes;
+	[alert textFieldAtIndex:0].enablesReturnKeyAutomatically = YES;
 	[responseField setPlaceholder:@"Enter response here"];
 	alert.delegate = self;
 	if ([type isEqualToString:@"SMS"]) {
@@ -194,29 +202,44 @@ void loadPrefs() {
 	else {
 		dl(@"[Hermes3] Prefs didn't write successfully D:");
 	}
+	[[UIApplication sharedApplication] launchApplicationWithIdentifier:@"com.apple.MobileSMS" suspended:YES];
+	[[UIApplication sharedApplication] launchApplicationWithIdentifier:@"com.kik.chat" suspended:YES];
+	[[UIApplication sharedApplication] launchApplicationWithIdentifier:@"net.whatsapp.WhatsApp" suspended:YES];
 	//system("open /Applications/MobileSMS.app");
 }
 %end
 
+//(Yet another) hack check to not show alerts while others are pending
 %hook UIAlertView 
 - (void)show {
-	//alertActive = YES;
 	prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
 	[(NSMutableDictionary*)prefs setObject:@YES forKey:@"alertActive"];
-	[(NSMutableDictionary*)prefs writeToFile:kSettingsPath atomically:YES];
-	//if (![[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.MobileSMS"]) {
-		%orig;
-	//}
+	[(NSMutableDictionary*)prefs writeToFile:kSettingsPath atomically:NO];
+	%orig;
 } 
+-(void)dismiss {
+	prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
+	[(NSMutableDictionary*)prefs setObject:@NO forKey:@"alertActive"];
+	[(NSMutableDictionary*)prefs writeToFile:kSettingsPath atomically:NO];
+	%orig;
+}
+-(void)dismissWithClickedButtonIndex:(NSInteger)clickedButtonIndex animated:(BOOL)animated {
+	prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
+	[(NSMutableDictionary*)prefs setObject:@NO forKey:@"alertActive"];
+	[(NSMutableDictionary*)prefs writeToFile:kSettingsPath atomically:NO];
+	%orig;
+}
+-(void)dismissAnimated:(BOOL)animated {
+	prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
+	[(NSMutableDictionary*)prefs setObject:@NO forKey:@"alertActive"];
+	[(NSMutableDictionary*)prefs writeToFile:kSettingsPath atomically:NO];
+	%orig;
+}
 %end
-
-@interface UIApplication (Hermes)
--(id)_accessibilityFrontMostApplication;
-@end
-@interface SBApplication (Hermes)
--(NSString*)bundleIdentifier;
-@end
 
 %ctor {
 	system("open /Applications/MobileSMS.app");
+	[[UIApplication sharedApplication] launchApplicationWithIdentifier:@"com.apple.MobileSMS" suspended:YES];
+	[[UIApplication sharedApplication] launchApplicationWithIdentifier:@"com.kik.chat" suspended:YES];
+	[[UIApplication sharedApplication] launchApplicationWithIdentifier:@"net.whatsapp.WhatsApp" suspended:YES];
 }
