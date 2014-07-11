@@ -1,5 +1,6 @@
 Package: com.phillipt.hermes
 Name: Hermes
+Icon: Hermes.png
 Depends: mobilesubstrate, cc.tweak.libobjcipc
 Version: 0.0.1
 Architecture: iphoneos-arm
