@@ -195,7 +195,7 @@ void quickReply() {
 				if (debug) NSLog(@"[Hermes3] %@ from %@: %@", prefs[@"titleType"], prefs[@"displayName"], prefs[@"text"]);
 
 				//if (debug) NSLog(@"[Hermes3] Prefs dict is %@", prefs);
-				dla(@"[Hermes3] Prefs dict is %@", prefs);
+				//dla(@"[Hermes3] Prefs dict is %@", prefs);
 				//NSLog(@"[Hermes3] Did not have pending alert");
 				dla(@"[Hermes3] Is showing alert? %@", isPending ? @"True":@"False");
 				isPending = YES;

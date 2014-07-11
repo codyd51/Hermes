@@ -111,6 +111,7 @@ NSMutableDictionary* prefs = [NSMutableDictionary dictionaryWithContentsOfFile:k
 				@"rawAddress" : prefs[@"rawAddress"]
 			};
 
+			[[UIApplication sharedApplication] launchApplicationWithIdentifier:@"com.apple.MobileSMS" suspended:YES];
 			[OBJCIPC sendMessageToAppWithIdentifier:@"com.apple.MobileSMS" messageName:@"com.phillipt.hermes.ipc" dictionary:responseInfoDict replyHandler:^(NSDictionary *response) {
     			dla(@"Received reply from MobileSMS: %@", response);
 			}];
@@ -147,8 +148,46 @@ NSMutableDictionary* prefs = [NSMutableDictionary dictionaryWithContentsOfFile:k
 				@"kikUser" : prefs[@"kikUser"]
 			};
 
+			[[UIApplication sharedApplication] launchApplicationWithIdentifier:@"com.kik.chat" suspended:YES];
 			[OBJCIPC sendMessageToAppWithIdentifier:@"com.kik.chat" messageName:@"com.phillipt.hermes.kik" dictionary:responseInfoDict replyHandler:^(NSDictionary *response) {
     			dla(@"Received reply from Kik: %@", response);
+			}];
+		}
+	}
+	else {
+		isPending = NO;
+	}
+}
+@end
+@interface WhatsAppGarbClass : GarbClass <UIAlertViewDelegate>
+@end
+@implementation WhatsAppGarbClass
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	isPending = NO;
+	//alertActive = NO;
+	prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
+	[(NSMutableDictionary*)prefs setObject:@NO forKey:@"alertActive"];
+	[(NSMutableDictionary*)prefs writeToFile:kSettingsPath atomically:YES];
+
+	if (buttonIndex != [alertView cancelButtonIndex]) {
+		if (buttonIndex != 1) {
+			//[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"kik://"]];
+		}
+		else {
+			[(NSMutableDictionary*)prefs setObject:responseField.text forKey:@"reply"];
+			[(NSMutableDictionary*)prefs writeToFile:kSettingsPath atomically:YES];
+
+			reply = responseField.text;
+			NSDictionary* responseInfoDict = @{
+				@"reply" : reply,
+				//@"displayName" : prefs[@"displayName"],
+				@"jid" : prefs[@"jid"],
+				//@"kikUser" : prefs[@"kikUser"]
+			};
+
+			[[UIApplication sharedApplication] launchApplicationWithIdentifier:@"net.whatsapp.WhatsApp" suspended:YES];
+			[OBJCIPC sendMessageToAppWithIdentifier:@"net.whatsapp.WhatsApp" messageName:@"com.phillipt.hermes.whatsapp" dictionary:responseInfoDict replyHandler:^(NSDictionary *response) {
+    			dla(@"Received reply from WhatsApp: %@", response);
 			}];
 		}
 	}
@@ -196,6 +235,21 @@ void loadPrefs() {
     	return 0;
 	}];
 
+	[OBJCIPC registerIncomingMessageFromAppHandlerForMessageName:@"com.phillipt.hermes.WhatsAppMsgSend"  handler:^NSDictionary *(NSDictionary *message) {
+    	[(NSMutableDictionary*)prefs setObject:message[@"titleType"] forKey:@"titleType"];
+    	[(NSMutableDictionary*)prefs setObject:message[@"displayName"] forKey:@"displayName"];
+    	[(NSMutableDictionary*)prefs setObject:message[@"text"] forKey:@"text"];
+    	[(NSMutableDictionary*)prefs setObject:message[@"responseJID"] forKey:@"jid"];
+    	//[(NSMutableDictionary*)prefs setObject:message[@"kikUser"] forKey:@"kikUser"];
+    	if ([(NSMutableDictionary*)prefs writeToFile:kSettingsPath atomically:YES]) {
+			dl(@"[Hermes3] Prefs wrote successfully");
+		}
+		else {
+			dl(@"[Hermes3] Prefs didn't write successfully D:");
+		}
+    	return 0;
+	}];
+
 	if ([(NSMutableDictionary*)prefs writeToFile:kSettingsPath atomically:YES]) {
 		dl(@"[Hermes3] Prefs wrote successfully");
 	}
@@ -209,7 +263,7 @@ void loadPrefs() {
 }
 %end
 
-//(Yet another) hack check to not show alerts while others are pending
+//(Yet another) hacky check to not show alerts while others are pending
 %hook UIAlertView 
 - (void)show {
 	prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];

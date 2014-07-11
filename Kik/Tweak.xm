@@ -188,7 +188,7 @@ void kikReply() {
 				//rawAddress = sbMessage.sender.rawAddress;
 
 				rawAddress = prefs[@"rawAddress"];
-				//if (!prefs[@"alertActive"]) {
+				if (!prefs[@"alertActive"]) {
 					UIAlertView* alert = [kikGarb createQRAlertWithType:prefs[@"titleType"] name:prefs[@"displayName"] text:prefs[@"text"]];
 					//This is a (very hacky) check to see if we've already shown an alert for this message's GUID, to prevent the same alert popping up in SpringBoard and Kik.
 					//if (![prefs objectForKey:[NSString stringWithFormat:@"shownMessageForGUID:%@", prefs[@"guid"]]]) {
@@ -207,10 +207,10 @@ void kikReply() {
 					//else {
 					//	dl(@"[Hermes3 - Kik] We've already shown a message for that GUID!! >:(");
 					//}
-				//}
-				//else {
-				//	NSLog(@"[Hermes - Kik] Alert was active");
-				//}
+				}
+				else {
+					NSLog(@"[Hermes - Kik] Alert was active");
+				}
 				if (debug) NSLog(@"[Hermes3 - Kik] %@ from %@: %@", prefs[@"titleType"], prefs[@"displayName"], prefs[@"text"]);
 
 				//if (debug) NSLog(@"[Hermes3] Prefs dict is %@", prefs);
