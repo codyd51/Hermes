@@ -1,7 +1,3 @@
-#import <notify.h>
-#import <libobjcipc/objcipc.h>
-#import <objc/runtime.h>
-#import <objc/objc.h>
 #import "Interfaces.h"
 #define kSettingsPath [NSHomeDirectory() stringByAppendingPathComponent:@"/Library/Preferences/com.phillipt.hermes.plist"]
 #define dla(x, a) if(debug) NSLog(x, a)
@@ -10,46 +6,16 @@
 @class SBApplication, BKSProcessAssertion;
 id storage;
 BOOL isPending;
-BOOL enabled;
+//BOOL enabled;
 //BOOL alertActive = NO;
-BOOL debug = YES;
+BOOL debug = NO;
 NSString* rawAddress;
 NSString* reply;
 UITextField* responseField;
 NSMutableDictionary* prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
 
-@class WAChatSession;
-@interface UIApplication (HermesWhatsApp)
--(id)_accessibilityFrontMostApplication;
-@end
-@interface SBApplication (HermesWhatsApp)
--(id)bundleIdentifier;
-@end
-@interface NSConcreteNotification : NSObject
-@property NSDictionary* userInfo;
-@end
-@interface WhatsAppGarbClass
--(UIAlertView*)createQRAlertWithType:(NSString*)type name:(NSString*)name text:(NSString*)text;
-@end
-@interface WAChatStorage : NSObject
--(id)existingChatSessionForJID:(id)jid;
--(id)messageWithText:(id)text inChatSession:(id)session isBroadcast:(BOOL)brodcast;
--(void)sendMessage:(id)message notify:(BOOL)notify;
-@end
-@interface ChatManager : NSObject
-@property WAChatStorage* storage;
-+(ChatManager*)sharedManager;
-@end
-@interface WAMessage : NSObject
-@property (nonatomic,retain) NSString* fromJID; 
-@property (nonatomic,retain) NSString* toJID; 
-@property (nonatomic,retain) NSString* text; 
-@property (nonatomic,retain) NSNumber* isFromMe; 
-@property (nonatomic,retain) NSString* pushName;
-@end
-
 WhatsAppGarbClass* whatsAppGarb = [[%c(WhatsAppGarbClass) alloc] init];
-
+%group WhatsApp
 %hook ChatManager
 -(id)init {
 	NSLog(@"[Hermes3 - WhatsApp] ChatManager init");
@@ -149,8 +115,9 @@ WhatsAppGarbClass* whatsAppGarb = [[%c(WhatsAppGarbClass) alloc] init];
 	%orig;
 }
 %end
-
+%end
 void whatsReply() {
+	[[UIApplication sharedApplication] launchApplicationWithIdentifier:@"net.whatsapp.WhatsApp" suspended:YES];
 	prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
 	NSLog(@"[Hermes3 - WhatsApp] WhatsApp message received!");
 	SBApplication* currOpen = [[%c(SpringBoard) sharedApplication] _accessibilityFrontMostApplication];
@@ -251,6 +218,9 @@ void whatsReply() {
 									CFSTR("com.phillipt.hermes.whatsAppReceived"),
 									NULL,
 									CFNotificationSuspensionBehaviorDeliverImmediately);
+
+	prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
+	if ([prefs[@"messagesUse"] boolValue]) %init(WhatsApp);	
 }
 
 @interface CyHelper : NSObject

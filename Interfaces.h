@@ -1,3 +1,20 @@
+#import <MessageUI/MessageUI.h>
+#import <objc/runtime.h>
+#import <objc/objc.h>
+//#import <ChatKit/CKService.h>
+#import <xpc/xpc.h>
+#import <notify.h>
+#import <libobjcipc/objcipc.h>
+#import <Kik/KikUser.h>
+#import <Kik/KikUserHelper.h>
+#import <Kik/KikChatHelper.h>
+#import <Kik/CoreDataConversationManager.h>
+#import <Kik/CoreDataConversation.h>
+#import <Kik/KikStorage.h>
+#import <Kik/Tokener.h>
+#import <Kik/XDataManager.h>
+#import <Kik/MetricsDataHandler.h>
+
 @class CKConversation, CKEntity, IMMessage, IMService, NSArray, NSAttributedString, NSDate, NSError, NSString;
 
 @interface CKIMMessage : NSObject
@@ -908,8 +925,41 @@
 + (void)setAllWindowsKeepContextInBackground:(_Bool)arg1;
 @end
 
+@interface UIApplication (HermesKik)
+- (BOOL)launchApplicationWithIdentifier:(id)arg1 suspended:(BOOL)arg2;
+-(id)_accessibilityFrontMostApplication;
+@end
+@interface SBApplication (HermesKik)
+-(id)bundleIdentifier;
+@end
+@interface NSConcreteNotification : NSObject
+@property NSDictionary* userInfo;
+@end
+@interface GarbClass : NSObject <UIAlertViewDelegate>
+-(BOOL)hasPendingAlert;
+-(UIAlertView*)alertFromCKIMMessage:(CKIMMessage*)obj andType:(NSString*)type withPart:(CKTextMessagePart*)text;
+-(UIAlertView*)createQRAlertWithType:(NSString*)type name:(NSString*)name text:(NSString*)text;
+@end
+@interface BBBulletin : NSObject
+-(void)setButtons:(NSArray *)buttons;
+- (void)setMessage:(NSString *)msg;
+-(NSString *)sectionID;
+-(BOOL)isHermesBulletin;
+@end
 
+@interface SBUIBannerItem : NSObject
+-(BBBulletin *)pullDownNotification;
+@end
 
+@interface SBUIBannerContext : NSObject
+-(SBUIBannerItem *)item;
+@end
 
-
-
+@interface SBDefaultBannerView : UIView
+-(SBUIBannerContext *)bannerContext;
+-(BOOL)didAddButton;
+-(BBBulletin *)hermesBulletin;
+-(void)messageReply;
+-(void)kikReply;
+-(void)whatsReply;
+@end

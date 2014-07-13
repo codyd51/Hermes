@@ -10,9 +10,8 @@
 @class GarbClass;
 CKIMMessage* sbMessage = [[CKIMMessage alloc] init];
 BOOL isPending;
-BOOL enabled;
 //BOOL alertActive = NO;
-BOOL debug = YES;
+BOOL debug = NO;
 NSString* rawAddress;
 NSString* reply;
 UITextField* responseField;
@@ -20,6 +19,7 @@ NSMutableDictionary* prefs = [NSMutableDictionary dictionaryWithContentsOfFile:k
 GarbClass* garb = [[%c(GarbClass) alloc] init];
 
 @interface UIApplication (HermesKik)
+- (BOOL)launchApplicationWithIdentifier:(id)arg1 suspended:(BOOL)arg2;
 -(id)_accessibilityFrontMostApplication;
 @end
 @interface SBApplication (HermesKik)
@@ -28,10 +28,10 @@ GarbClass* garb = [[%c(GarbClass) alloc] init];
 @interface GarbClass
 -(UIAlertView*)createQRAlertWithType:(NSString*)type name:(NSString*)name text:(NSString*)text;
 @end
-
+%group Messages
 %hook SMSApplication
 - (id)init {
-	if ([[prefs objectForKey:@"enabled"] boolValue]) {
+	//if ([[prefs objectForKey:@"enabled"] boolValue]) {
 		[UIWindow setAllWindowsKeepContextInBackground:NO];
 		[OBJCIPC registerIncomingMessageFromSpringBoardHandlerForMessageName:@"com.phillipt.hermes.ipc" handler:^NSDictionary *(NSDictionary *message) {
 			CKConversationList* conversationList = [CKConversationList sharedConversationList];
@@ -50,10 +50,10 @@ GarbClass* garb = [[%c(GarbClass) alloc] init];
 
     		return 0;
 		}];
-	}
-	else {
-		dl(@"[Hermes3] Not enabled, not doing anything");
-	}
+	//}
+	//else {
+	//	dl(@"[Hermes3] Not enabled, not doing anything");
+	//}
 	return %orig;
 }
 %end
@@ -61,7 +61,7 @@ GarbClass* garb = [[%c(GarbClass) alloc] init];
 %hook CKIMMessage
 
 - (BOOL)postMessageReceivedIfNecessary {
-	if ([[prefs objectForKey:@"enabled"] boolValue]) {
+	///if ([[prefs objectForKey:@"enabled"] boolValue]) {
 		dl(@"[Hermes3] recieved message");
 
 		sbMessage = self;
@@ -98,10 +98,10 @@ GarbClass* garb = [[%c(GarbClass) alloc] init];
 		dla(@"[Hermes3] Prefs dict is %@", prefs);
 
 		//notify_post("com.phillipt.hermes.received");
-	}
-	else {
-		dl(@"[Hermes3] Not enabled, not doing anything");
-	}
+	//}
+	//else {
+	//	dl(@"[Hermes3] Not enabled, not doing anything");
+	//}
 
 	return %orig;
 }
@@ -126,8 +126,9 @@ GarbClass* garb = [[%c(GarbClass) alloc] init];
 }
 
 %end
-
+%end
 void quickReply() {
+	[[UIApplication sharedApplication] launchApplicationWithIdentifier:@"com.apple.MobileSMS" suspended:YES];
 	prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
 	if (prefs) {
 	SBApplication* currOpen = [[%c(SpringBoard) sharedApplication] _accessibilityFrontMostApplication];
@@ -156,7 +157,7 @@ void quickReply() {
 		}
 	}
 */
-	//dla(@"[Hermes3] prefs are %@", [prefs description]);
+	dla(@"[Hermes3] prefs are %@", [prefs description]);
 	//dla(@"[Hermes3] isOutgoing is %@", prefs[@"isOutgoing"]);
 	//dl(@"[Hermes3] Received message");
 	//if (![prefs[@"isOutgoing"] boolValue] && ![prefs[@"isFromMe"] boolValue]) {
@@ -234,4 +235,7 @@ void quickReply() {
 									CFSTR("com.phillipt.hermes.received"),
 									NULL,
 									CFNotificationSuspensionBehaviorDeliverImmediately);
+
+	prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
+	if ([prefs[@"messagesUse"] boolValue]) %init(Messages);	
 }

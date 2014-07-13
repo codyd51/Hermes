@@ -1,16 +1,3 @@
-#import <Kik/KikUser.h>
-#import <Kik/KikUserHelper.h>
-#import <Kik/KikChatHelper.h>
-#import <Kik/CoreDataConversationManager.h>
-#import <Kik/CoreDataConversation.h>
-#import <Kik/KikStorage.h>
-#import <Kik/Tokener.h>
-#import <Kik/XDataManager.h>
-#import <Kik/MetricsDataHandler.h>
-#import <notify.h>
-#import <libobjcipc/objcipc.h>
-#import <objc/runtime.h>
-#import <objc/objc.h>
 #import "Interfaces.h"
 #define kSettingsPath [NSHomeDirectory() stringByAppendingPathComponent:@"/Library/Preferences/com.phillipt.hermes.plist"]
 #define dla(x, a) if(debug) NSLog(x, a)
@@ -31,29 +18,16 @@ id chat;
 id conversation;
 CoreDataConversationManager* manager;
 BOOL isPending;
-BOOL enabled;
+//BOOL enabled;
 //BOOL alertActive = NO;
-BOOL debug = YES;
+BOOL debug = NO;
 NSString* rawAddress;
 NSString* reply;
 UITextField* responseField;
 NSMutableDictionary* prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
 
-@interface UIApplication (HermesKik)
--(id)_accessibilityFrontMostApplication;
-@end
-@interface SBApplication (HermesKik)
--(id)bundleIdentifier;
-@end
-@interface KikGarbClass
--(UIAlertView*)createQRAlertWithType:(NSString*)type name:(NSString*)name text:(NSString*)text;
-@end
-@interface NSConcreteNotification : NSObject
-@property NSDictionary* userInfo;
-@end
-
 KikGarbClass* kikGarb = [[%c(KikGarbClass) alloc] init];
-
+%group Kik
 %hook CoreDataConversationManager
 
 -(id)initWithStorage:(id)arg1 andNetwork:(id)arg2 andUserManager:(id)arg3 andMessageManager:(id)arg4 andChatManager:(id)arg5 andAccountManager:(id)arg6 andAttachmentManager:(id)arg7 { 
@@ -146,8 +120,9 @@ KikGarbClass* kikGarb = [[%c(KikGarbClass) alloc] init];
 }
 
 %end
-
+%end
 void kikReply() {
+	[[UIApplication sharedApplication] launchApplicationWithIdentifier:@"com.kik.chat" suspended:YES];
 	prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
 	NSLog(@"[Hermes3 - Kik] Kik message received!");
 	SBApplication* currOpen = [[%c(SpringBoard) sharedApplication] _accessibilityFrontMostApplication];
@@ -248,4 +223,7 @@ void kikReply() {
 									CFSTR("com.phillipt.hermes.kikReceived"),
 									NULL,
 									CFNotificationSuspensionBehaviorDeliverImmediately);
+
+	prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
+	if ([prefs[@"messagesUse"] boolValue]) %init(Kik);	
 }

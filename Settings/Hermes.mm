@@ -93,6 +93,9 @@ int width = [[UIScreen mainScreen] bounds].size.width;
 	}
 	return _specifiers;
 }
+-(void)respring {
+	system("killall backboardd");
+}
 @end
 @implementation HermesCreditsListController
 - (id)specifiers {

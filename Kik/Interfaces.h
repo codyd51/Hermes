@@ -1,3 +1,17 @@
+#import <Kik/KikUser.h>
+#import <Kik/KikUserHelper.h>
+#import <Kik/KikChatHelper.h>
+#import <Kik/CoreDataConversationManager.h>
+#import <Kik/CoreDataConversation.h>
+#import <Kik/KikStorage.h>
+#import <Kik/Tokener.h>
+#import <Kik/XDataManager.h>
+#import <Kik/MetricsDataHandler.h>
+#import <notify.h>
+#import <libobjcipc/objcipc.h>
+#import <objc/runtime.h>
+#import <objc/objc.h>
+
 @class CKConversation, CKEntity, IMMessage, IMService, NSArray, NSAttributedString, NSDate, NSError, NSString;
 
 @interface CKIMMessage : NSObject
@@ -908,7 +922,19 @@
 + (void)setAllWindowsKeepContextInBackground:(_Bool)arg1;
 @end
 
-
+@interface UIApplication (HermesKik)
+- (BOOL)launchApplicationWithIdentifier:(id)arg1 suspended:(BOOL)arg2;
+-(id)_accessibilityFrontMostApplication;
+@end
+@interface SBApplication (HermesKik)
+-(id)bundleIdentifier;
+@end
+@interface KikGarbClass
+-(UIAlertView*)createQRAlertWithType:(NSString*)type name:(NSString*)name text:(NSString*)text;
+@end
+@interface NSConcreteNotification : NSObject
+@property NSDictionary* userInfo;
+@end
 
 
 

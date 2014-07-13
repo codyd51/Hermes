@@ -1,21 +1,4 @@
-
-#import <MessageUI/MessageUI.h>
 #import "Interfaces.h"
-#import <objc/runtime.h>
-#import <objc/objc.h>
-//#import <ChatKit/CKService.h>
-#import <xpc/xpc.h>
-#import <notify.h>
-#import <libobjcipc/objcipc.h>
-#import <Kik/KikUser.h>
-#import <Kik/KikUserHelper.h>
-#import <Kik/KikChatHelper.h>
-#import <Kik/CoreDataConversationManager.h>
-#import <Kik/CoreDataConversation.h>
-#import <Kik/KikStorage.h>
-#import <Kik/Tokener.h>
-#import <Kik/XDataManager.h>
-#import <Kik/MetricsDataHandler.h>
 #define kSettingsPath [NSHomeDirectory() stringByAppendingPathComponent:@"/Library/Preferences/com.phillipt.hermes.plist"]
 #define dla(x, a) if(debug) NSLog(x, a)
 #define dl(x) if(debug) NSLog(x)
@@ -24,7 +7,7 @@ CKIMMessage* sbMessage = [[CKIMMessage alloc] init];
 BOOL isPending;
 BOOL enabled;
 //BOOL alertActive = NO;
-BOOL debug = YES;
+BOOL debug = NO;
 NSString* rawAddress;
 NSString* reply;
 UITextField* responseField;
@@ -32,44 +15,6 @@ BOOL pirated;
 int appFrom;
 NSMutableDictionary* prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
 
-@interface NSConcreteNotification : NSObject
-@property NSDictionary* userInfo;
-@end
-@interface UIApplication (Hermes)
-- (BOOL)launchApplicationWithIdentifier:(id)arg1 suspended:(BOOL)arg2;
--(id)_accessibilityFrontMostApplication;
-@end
-@interface SBApplication (Hermes)
--(NSString*)bundleIdentifier;
-@end
-@interface GarbClass : NSObject <UIAlertViewDelegate>
--(BOOL)hasPendingAlert;
--(UIAlertView*)alertFromCKIMMessage:(CKIMMessage*)obj andType:(NSString*)type withPart:(CKTextMessagePart*)text;
--(UIAlertView*)createQRAlertWithType:(NSString*)type name:(NSString*)name text:(NSString*)text;
-@end
-@interface BBBulletin : NSObject
--(void)setButtons:(NSArray *)buttons;
-- (void)setMessage:(NSString *)msg;
--(NSString *)sectionID;
--(BOOL)isHermesBulletin;
-@end
-
-@interface SBUIBannerItem : NSObject
--(BBBulletin *)pullDownNotification;
-@end
-
-@interface SBUIBannerContext : NSObject
--(SBUIBannerItem *)item;
-@end
-
-@interface SBDefaultBannerView : UIView
--(SBUIBannerContext *)bannerContext;
--(BOOL)didAddButton;
--(BBBulletin *)hermesBulletin;
--(void)messageReply;
--(void)kikReply;
--(void)whatsReply;
-@end
 @implementation GarbClass
 //This code does not work on iOS 7. Apparantly, no references back to UIAlertView are kept in the keyWindow. Tl;Dr this code is useless, hence the 'isPending' variable. I'm leaving it here in case anyone wants to figure out how to make it work
 -(BOOL)hasPendingAlert {
@@ -245,6 +190,11 @@ void loadPrefs() {
 	prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
 	[(NSMutableDictionary*)prefs setObject:@(enabled) forKey:@"enabled"];
 
+	if (!prefs) {
+		UIAlertView* firstRunAlert = [[UIAlertView alloc] initWithTitle:@"Hermes" message:@"Welcome to Hermes. To get started, visit Hermes's settings page." delegate:nil cancelButtonTitle:@"Dismiss" otherButtonTitles:nil];
+		[firstRunAlert show];
+	}
+
 	[OBJCIPC registerIncomingMessageFromAppHandlerForMessageName:@"com.phillipt.hermes.kikMsgSend"  handler:^NSDictionary *(NSDictionary *message) {
     	[(NSMutableDictionary*)prefs setObject:message[@"titleType"] forKey:@"titleType"];
     	[(NSMutableDictionary*)prefs setObject:message[@"displayName"] forKey:@"displayName"];
@@ -348,6 +298,21 @@ void loadPrefs() {
 
 UIButton *replyButton;
 
+BOOL shouldShowReply(int sender) {
+	prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
+	if (!prefs) return NO;
+	if (sender == 1) {
+		if ([prefs[@"messagesUse"] boolValue]) return YES;
+	}
+	else if (sender == 2) {
+		if ([prefs[@"kikUse"] boolValue]) return YES;
+	}
+	else if (sender == 3) {
+		if ([prefs[@"whatsUse"] boolValue]) return YES;
+	}
+	return NO;
+} 
+
 %hook SBDefaultBannerView
 
 %new
@@ -378,7 +343,7 @@ return [[[self bannerContext] item] pullDownNotification];
 		if (appFrom == 1) [replyButton addTarget:self action:@selector(messageReply) forControlEvents:UIControlEventTouchUpInside];
 		else if (appFrom == 2) [replyButton addTarget:self action:@selector(kikReply) forControlEvents:UIControlEventTouchUpInside];
 		else [replyButton addTarget:self action:@selector(whatsReply) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:replyButton];
+		if (shouldShowReply(appFrom)) [self addSubview:replyButton];
 	}
 	%orig;
 }

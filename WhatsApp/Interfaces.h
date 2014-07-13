@@ -1,3 +1,8 @@
+#import <notify.h>
+#import <libobjcipc/objcipc.h>
+#import <objc/runtime.h>
+#import <objc/objc.h>
+
 @class CKConversation, CKEntity, IMMessage, IMService, NSArray, NSAttributedString, NSDate, NSError, NSString;
 
 @interface CKIMMessage : NSObject
@@ -908,8 +913,35 @@
 + (void)setAllWindowsKeepContextInBackground:(_Bool)arg1;
 @end
 
-
-
-
+@class WAChatSession;
+@interface UIApplication (HermesWhatsApp)
+- (BOOL)launchApplicationWithIdentifier:(id)arg1 suspended:(BOOL)arg2;
+-(id)_accessibilityFrontMostApplication;
+@end
+@interface SBApplication (HermesWhatsApp)
+-(id)bundleIdentifier;
+@end
+@interface NSConcreteNotification : NSObject
+@property NSDictionary* userInfo;
+@end
+@interface WhatsAppGarbClass
+-(UIAlertView*)createQRAlertWithType:(NSString*)type name:(NSString*)name text:(NSString*)text;
+@end
+@interface WAChatStorage : NSObject
+-(id)existingChatSessionForJID:(id)jid;
+-(id)messageWithText:(id)text inChatSession:(id)session isBroadcast:(BOOL)brodcast;
+-(void)sendMessage:(id)message notify:(BOOL)notify;
+@end
+@interface ChatManager : NSObject
+@property WAChatStorage* storage;
++(ChatManager*)sharedManager;
+@end
+@interface WAMessage : NSObject
+@property (nonatomic,retain) NSString* fromJID; 
+@property (nonatomic,retain) NSString* toJID; 
+@property (nonatomic,retain) NSString* text; 
+@property (nonatomic,retain) NSNumber* isFromMe; 
+@property (nonatomic,retain) NSString* pushName;
+@end
 
 
