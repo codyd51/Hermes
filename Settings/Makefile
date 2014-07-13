@@ -6,6 +6,7 @@ Hermes_FILES = Hermes.mm
 Hermes_INSTALL_PATH = /Library/PreferenceBundles
 Hermes_FRAMEWORKS = UIKit CoreGraphics
 Hermes_PRIVATE_FRAMEWORKS = Preferences
+Hermes_CFLAGS=-fobjc-arc
 
 include $(THEOS_MAKE_PATH)/bundle.mk
 

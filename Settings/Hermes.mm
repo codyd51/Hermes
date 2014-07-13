@@ -89,7 +89,7 @@ int width = [[UIScreen mainScreen] bounds].size.width;
 @implementation HermesListController
 - (id)specifiers {
 	if(_specifiers == nil) {
-		_specifiers = [[self loadSpecifiersFromPlistName:@"Hermes" target:self] retain];
+		_specifiers = [self loadSpecifiersFromPlistName:@"Hermes" target:self];
 	}
 	return _specifiers;
 }
@@ -237,6 +237,7 @@ int randNum = 0;
 		[self addSubview:underLabel];
 
 	}
+
 	return self;
 }
  

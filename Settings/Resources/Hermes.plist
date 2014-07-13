@@ -62,6 +62,15 @@
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>footerText</key>
+			<string>Hermes currently only functions properly when the app you are quick replying with is running in the background.
+If you are using any tweaks that kill background apps automatically, please exclude the apps you want to use with Hermes.</string>
+			<key>alignment</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>footerText</key>
 			<string>Please respring to apply changes.</string>
 		</dict>
 		<dict>
