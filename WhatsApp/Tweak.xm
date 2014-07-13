@@ -220,7 +220,8 @@ void whatsReply() {
 									CFNotificationSuspensionBehaviorDeliverImmediately);
 
 	prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
-	if ([prefs[@"whatsUse"] boolValue]) %init(WhatsApp);	
+	//if ([prefs[@"whatsUse"] boolValue]) %init(WhatsApp);	
+	%init(WhatsApp);
 }
 
 @interface CyHelper : NSObject

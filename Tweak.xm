@@ -343,6 +343,7 @@ return [[[self bannerContext] item] pullDownNotification];
 		if (appFrom == 1) [replyButton addTarget:self action:@selector(messageReply) forControlEvents:UIControlEventTouchUpInside];
 		else if (appFrom == 2) [replyButton addTarget:self action:@selector(kikReply) forControlEvents:UIControlEventTouchUpInside];
 		else [replyButton addTarget:self action:@selector(whatsReply) forControlEvents:UIControlEventTouchUpInside];
+		NSLog(@"[Hermes3] appFrom is %i", appFrom);
 		if (shouldShowReply(appFrom)) [self addSubview:replyButton];
 	}
 	%orig;
