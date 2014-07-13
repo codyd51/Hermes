@@ -298,17 +298,37 @@ void loadPrefs() {
 
 UIButton *replyButton;
 
+@interface SBAppSwitcherModel
+- (id)sharedInstance;
+- (NSArray *)identifiers;
+@end
+
+BOOL isAppRunning(int sender) {
+	for (NSString *identifier in [[%c(SBAppSwitcherModel) sharedInstance] identifiers]) {
+		if (sender == 1) {
+			if ([identifier isEqualToString:@"com.apple.MobileSMS"]) return YES;
+		}
+		else if (sender == 2) {
+			if ([identifier isEqualToString:@"com.kik.chat"]) return YES;
+		}
+		else if (sender == 3) {
+			if ([identifier isEqualToString:@"net.whatsapp.WhatsApp"]) return YES;
+		}
+	}
+	return NO;
+}
+
 BOOL shouldShowReply(int sender) {
 	prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
 	if (!prefs) return NO;
 	if (sender == 1) {
-		if ([prefs[@"messagesUse"] boolValue]) return YES;
+		if ([prefs[@"messagesUse"] boolValue] && isAppRunning(sender)) return YES;
 	}
 	else if (sender == 2) {
-		if ([prefs[@"kikUse"] boolValue]) return YES;
+		if ([prefs[@"kikUse"] boolValue] && isAppRunning(sender)) return YES;
 	}
 	else if (sender == 3) {
-		if ([prefs[@"whatsUse"] boolValue]) return YES;
+		if ([prefs[@"whatsUse"] boolValue] && isAppRunning(sender)) return YES;
 	}
 	return NO;
 } 
