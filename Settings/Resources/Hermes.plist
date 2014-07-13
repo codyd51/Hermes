@@ -14,7 +14,7 @@
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>footerText</key>
-			<string>Choose which applications you want Hermes to work with</key>
+			<string>Choose which applications you want Hermes to work with</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -62,7 +62,7 @@
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>footerText</key>
-			<string>Please respring to apply changes.</string<
+			<string>Please respring to apply changes.</string>
 		</dict>
 		<dict>
 			<key>cell</key>
