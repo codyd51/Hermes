@@ -28,6 +28,8 @@ BOOL debug = YES;
 NSString* rawAddress;
 NSString* reply;
 UITextField* responseField;
+BOOL pirated;
+int appFrom;
 NSMutableDictionary* prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
 
 @interface NSConcreteNotification : NSObject
@@ -44,6 +46,29 @@ NSMutableDictionary* prefs = [NSMutableDictionary dictionaryWithContentsOfFile:k
 -(BOOL)hasPendingAlert;
 -(UIAlertView*)alertFromCKIMMessage:(CKIMMessage*)obj andType:(NSString*)type withPart:(CKTextMessagePart*)text;
 -(UIAlertView*)createQRAlertWithType:(NSString*)type name:(NSString*)name text:(NSString*)text;
+@end
+@interface BBBulletin : NSObject
+-(void)setButtons:(NSArray *)buttons;
+- (void)setMessage:(NSString *)msg;
+-(NSString *)sectionID;
+-(BOOL)isHermesBulletin;
+@end
+
+@interface SBUIBannerItem : NSObject
+-(BBBulletin *)pullDownNotification;
+@end
+
+@interface SBUIBannerContext : NSObject
+-(SBUIBannerItem *)item;
+@end
+
+@interface SBDefaultBannerView : UIView
+-(SBUIBannerContext *)bannerContext;
+-(BOOL)didAddButton;
+-(BBBulletin *)hermesBulletin;
+-(void)messageReply;
+-(void)kikReply;
+-(void)whatsReply;
 @end
 @implementation GarbClass
 //This code does not work on iOS 7. Apparantly, no references back to UIAlertView are kept in the keyWindow. Tl;Dr this code is useless, hence the 'isPending' variable. I'm leaving it here in case anyone wants to figure out how to make it work
@@ -260,6 +285,11 @@ void loadPrefs() {
 	[[UIApplication sharedApplication] launchApplicationWithIdentifier:@"com.kik.chat" suspended:YES];
 	[[UIApplication sharedApplication] launchApplicationWithIdentifier:@"net.whatsapp.WhatsApp" suspended:YES];
 	//system("open /Applications/MobileSMS.app");
+
+	if (pirated) {
+		UIAlertView* pirateAlert = [[UIAlertView alloc] initWithTitle:@"Hermes" message:@"This version of Hermes has been pirated. Please consider purchasing a copy as it took a lot of work to create." delegate:nil cancelButtonTitle:@"Dismiss" otherButtonTitles:nil];
+		[pirateAlert show];
+	}
 }
 %end
 
@@ -291,9 +321,93 @@ void loadPrefs() {
 }
 %end
 
+%hook BBBulletin 
+
+%new
+
+-(BOOL)isHermesBulletin {
+	if ([[self sectionID] isEqualToString:@"com.apple.MobileSMS"] || [[self sectionID] isEqualToString:@"com.kik.chat"] || [[self sectionID] isEqualToString:@"net.whatsapp.WhatsApp"]) {
+		if ([[self sectionID] isEqualToString:@"com.apple.MobileSMS"]) {
+			[[UIApplication sharedApplication] launchApplicationWithIdentifier:@"com.apple.MobileSMS" suspended:YES];
+			appFrom = 1;
+		}
+		else if ([[self sectionID] isEqualToString:@"com.kik.chat"]) {
+			[[UIApplication sharedApplication] launchApplicationWithIdentifier:@"com.kik.chat" suspended:YES];
+			appFrom = 2;
+		}
+		else {
+			[[UIApplication sharedApplication] launchApplicationWithIdentifier:@"net.whatsapp.WhatsApp" suspended:YES];
+			appFrom = 3;
+		}
+		return YES;
+	}
+	return NO;
+}
+
+%end
+
+UIButton *replyButton;
+
+%hook SBDefaultBannerView
+
+%new
+-(BBBulletin *)hermesBulletin {
+return [[[self bannerContext] item] pullDownNotification];
+}
+
+%new
+-(BOOL)didAddButton {
+	for (UIView *object in [self subviews]) {
+		if (object.tag == 1337) {
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
+-(void)layoutSubviews {
+	if ([[self hermesBulletin] isHermesBulletin] && ![self didAddButton]) {
+		replyButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		[replyButton setFrame:CGRectMake(0, 0, 100, 40)];
+		replyButton.tag = 1337;
+		replyButton.autoresizingMask = UIViewAutoresizingFlexibleRightMargin;
+		[replyButton setCenter:CGPointMake(self.center.x+((self.frame.size.width/2)-40),self.center.y)];
+		[replyButton setTitle:@"Reply" forState:UIControlStateNormal];
+		UIColor* butColor = [UIColor colorWithRed:0/255.0f green:160/255.0f blue:255/255.0f alpha:1.0f];
+		[replyButton setTitleColor:butColor forState:UIControlStateNormal];
+		if (appFrom == 1) [replyButton addTarget:self action:@selector(messageReply) forControlEvents:UIControlEventTouchUpInside];
+		else if (appFrom == 2) [replyButton addTarget:self action:@selector(kikReply) forControlEvents:UIControlEventTouchUpInside];
+		else [replyButton addTarget:self action:@selector(whatsReply) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:replyButton];
+	}
+	%orig;
+}
+
+%new
+-(void)messageReply {
+	notify_post("com.phillipt.hermes.received");
+}
+
+%new
+-(void)kikReply {
+	notify_post("com.phillipt.hermes.kikReceived");
+}
+
+%new
+-(void)whatsReply {
+	notify_post("com.phillipt.hermes.whatsAppReceived");
+}
+
+%end
+
 %ctor {
 	system("open /Applications/MobileSMS.app");
 	[[UIApplication sharedApplication] launchApplicationWithIdentifier:@"com.apple.MobileSMS" suspended:YES];
 	[[UIApplication sharedApplication] launchApplicationWithIdentifier:@"com.kik.chat" suspended:YES];
 	[[UIApplication sharedApplication] launchApplicationWithIdentifier:@"net.whatsapp.WhatsApp" suspended:YES];
+
+	//Yes, I totally understand the irony of having a piracy check in an open source tweak. B) deal with it
+	if (![[NSFileManager defaultManager] fileExistsAtPath:@"/var/lib/dpkg/info/org.thebigboss.hermes.list"] && ![[NSFileManager defaultManager] fileExistsAtPath:@"/var/lib/dpkg/info/com.phillipt.hermes.list"]) {
+		pirated = YES;
+	}
 }

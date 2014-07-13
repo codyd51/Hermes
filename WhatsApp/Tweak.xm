@@ -120,7 +120,7 @@ WhatsAppGarbClass* whatsAppGarb = [[%c(WhatsAppGarbClass) alloc] init];
 
 		NSDictionary *reply = [OBJCIPC sendMessageToSpringBoardWithMessageName:@"com.phillipt.hermes.WhatsAppMsgSend" dictionary:whatsAppMessage];
 
-		notify_post("com.phillipt.hermes.whatsAppReceived");
+		//notify_post("com.phillipt.hermes.whatsAppReceived");
 	//}
 	//else {
 	//	dl(@"[Hermes3 - WhatsApp] Not enabled, not doing anything");
@@ -150,7 +150,7 @@ WhatsAppGarbClass* whatsAppGarb = [[%c(WhatsAppGarbClass) alloc] init];
 }
 %end
 
-void kikReply() {
+void whatsReply() {
 	prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
 	NSLog(@"[Hermes3 - WhatsApp] WhatsApp message received!");
 	SBApplication* currOpen = [[%c(SpringBoard) sharedApplication] _accessibilityFrontMostApplication];
@@ -183,7 +183,7 @@ void kikReply() {
 	//dla(@"[Hermes3 - Kik] isOutgoing is %@", prefs[@"isOutgoing"]);
 	//if (![prefs[@"isOutgoing"] boolValue] && ![prefs[@"isFromMe"] boolValue]) {
 
-	if (![[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"net.whatsapp.WhatsApp"]) {
+	//if (![[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"net.whatsapp.WhatsApp"]) {
 		//if (![prefs[@"mesOpen"] boolValue]) {
 			//if (!isPending) {
 			//if (!alertActive) {
@@ -231,10 +231,10 @@ void kikReply() {
 		//else {
 		//	dl(@"[Hermes3 - Kik] Kik WAS open, not showing alert");
 		//}
-	}
-	else {
-		dl(@"[Hermes3 - WhatsApp] WhatsApp was open brah :(");
-	}
+	//}
+	//else {
+	//	dl(@"[Hermes3 - WhatsApp] WhatsApp was open brah :(");
+	//}
 	//}
 	//else {
 	//	NSLog(@"[Hermes3] Message was from me, not performing any actions");
@@ -247,7 +247,7 @@ void kikReply() {
 	system("open /Applications/WhatsApp.app");
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
 									NULL,
-									(CFNotificationCallback)kikReply,
+									(CFNotificationCallback)whatsReply,
 									CFSTR("com.phillipt.hermes.whatsAppReceived"),
 									NULL,
 									CFNotificationSuspensionBehaviorDeliverImmediately);

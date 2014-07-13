@@ -8,7 +8,7 @@ HermesKik_FRAMEWORKS = UIKit
 HermesKik_PRIVATE_FRAMEWORKS = BackBoardServices
 HermesKik_CFLAGS=-fobjc-arc
 HermesKik_LIBRARIES=objcipc
-Hermes_LDFLAGS=-Objc++
+HermesKik_LDFLAGS=-Objc++
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 

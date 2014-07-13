@@ -137,7 +137,7 @@ KikGarbClass* kikGarb = [[%c(KikGarbClass) alloc] init];
 
 		NSDictionary *reply = [OBJCIPC sendMessageToSpringBoardWithMessageName:@"com.phillipt.hermes.kikMsgSend" dictionary:kikMessage];
 
-		notify_post("com.phillipt.hermes.kikReceived");
+		//notify_post("com.phillipt.hermes.kikReceived");
 	//}
 	//else {
 	//	dl(@"[Hermes3 - Kik] Not enabled, not doing anything");
@@ -176,11 +176,11 @@ void kikReply() {
 		}
 	}
 */
-	dla(@"[Hermes3 - Kik] prefs are %@", [prefs description]);
+	//dla(@"[Hermes3 - Kik] prefs are %@", [prefs description]);
 	//dla(@"[Hermes3 - Kik] isOutgoing is %@", prefs[@"isOutgoing"]);
 	//if (![prefs[@"isOutgoing"] boolValue] && ![prefs[@"isFromMe"] boolValue]) {
 
-	if (![[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.kik.chat"]) {
+	//if (![[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.kik.chat"]) {
 		//if (![prefs[@"mesOpen"] boolValue]) {
 			//if (!isPending) {
 			//if (!alertActive) {
@@ -188,7 +188,7 @@ void kikReply() {
 				//rawAddress = sbMessage.sender.rawAddress;
 
 				rawAddress = prefs[@"rawAddress"];
-				if (!prefs[@"alertActive"]) {
+				//if (!prefs[@"alertActive"]) {
 					UIAlertView* alert = [kikGarb createQRAlertWithType:prefs[@"titleType"] name:prefs[@"displayName"] text:prefs[@"text"]];
 					//This is a (very hacky) check to see if we've already shown an alert for this message's GUID, to prevent the same alert popping up in SpringBoard and Kik.
 					//if (![prefs objectForKey:[NSString stringWithFormat:@"shownMessageForGUID:%@", prefs[@"guid"]]]) {
@@ -207,10 +207,10 @@ void kikReply() {
 					//else {
 					//	dl(@"[Hermes3 - Kik] We've already shown a message for that GUID!! >:(");
 					//}
-				}
-				else {
-					NSLog(@"[Hermes - Kik] Alert was active");
-				}
+				//}
+				//else {
+				//	NSLog(@"[Hermes - Kik] Alert was active");
+				//}
 				if (debug) NSLog(@"[Hermes3 - Kik] %@ from %@: %@", prefs[@"titleType"], prefs[@"displayName"], prefs[@"text"]);
 
 				//if (debug) NSLog(@"[Hermes3] Prefs dict is %@", prefs);
@@ -228,10 +228,10 @@ void kikReply() {
 		//else {
 		//	dl(@"[Hermes3 - Kik] Kik WAS open, not showing alert");
 		//}
-	}
-	else {
-		dl(@"[Hermes3 - Kik] Kik was open brah :(");
-	}
+	//}
+	//else {
+	//	dl(@"[Hermes3 - Kik] Kik was open brah :(");
+	//}
 	//}
 	//else {
 	//	NSLog(@"[Hermes3] Message was from me, not performing any actions");

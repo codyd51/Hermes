@@ -19,4 +19,5 @@ SUBPROJECTS += Daemon
 SUBPROJECTS += Kik
 SUBPROJECTS += Messages
 SUBPROJECTS += WhatsApp
+#SUBPROJECTS += Skype
 include $(THEOS_MAKE_PATH)/aggregate.mk

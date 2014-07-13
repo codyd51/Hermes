@@ -97,7 +97,7 @@ GarbClass* garb = [[%c(GarbClass) alloc] init];
 
 		dla(@"[Hermes3] Prefs dict is %@", prefs);
 
-		notify_post("com.phillipt.hermes.received");
+		//notify_post("com.phillipt.hermes.received");
 	}
 	else {
 		dl(@"[Hermes3] Not enabled, not doing anything");
@@ -169,7 +169,7 @@ void quickReply() {
 				//rawAddress = sbMessage.sender.rawAddress;
 
 				rawAddress = prefs[@"rawAddress"];
-				if (![prefs[@"alertActive"] boolValue]) {
+				//if (![prefs[@"alertActive"] boolValue]) {
 					UIAlertView* alert = [garb createQRAlertWithType:prefs[@"titleType"] name:prefs[@"displayName"] text:prefs[@"text"]];
 					//This is a (very hacky) check to see if we've already shown an alert for this message's GUID, to prevent the same alert popping up in SpringBoard and Messages.
 					if (![prefs objectForKey:[NSString stringWithFormat:@"shownMessageForGUID:%@", prefs[@"guid"]]]) {
@@ -188,10 +188,10 @@ void quickReply() {
 					else {
 						dl(@"[Hermes3] We've already shown a message for that GUID!! >:(");
 					}
-				}
-				else {
-					NSLog(@"[Hermes3] alertActive was true");
-				}
+				//}
+				//else {
+				//	NSLog(@"[Hermes3] alertActive was true");
+				//}
 				if (debug) NSLog(@"[Hermes3] %@ from %@: %@", prefs[@"titleType"], prefs[@"displayName"], prefs[@"text"]);
 
 				//if (debug) NSLog(@"[Hermes3] Prefs dict is %@", prefs);
