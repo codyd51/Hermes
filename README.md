@@ -12,10 +12,4 @@ Open soured under the Creative Commons license
 TODO
 ------------
 
-* Finally fix messages showing up in different processes once and for all
-
 * Make Hermes work even when the respective app is closed
-
-* Fix messages popping up over one another
-
-* Don't show messages if they're outgoing
