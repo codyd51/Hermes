@@ -8,7 +8,7 @@
 #define dl(x) if(debug) NSLog(x)
 
 @class GarbClass;
-CKIMMessage* sbMessage = [[CKIMMessage alloc] init];
+CKIMMessage* sbMessage = [[%c(CKIMMessage) alloc] init];
 BOOL isPending;
 //BOOL alertActive = NO;
 BOOL debug = NO;

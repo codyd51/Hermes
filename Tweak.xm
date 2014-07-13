@@ -3,7 +3,7 @@
 #define dla(x, a) if(debug) NSLog(x, a)
 #define dl(x) if(debug) NSLog(x)
 
-CKIMMessage* sbMessage = [[CKIMMessage alloc] init];
+CKIMMessage* sbMessage = [[%c(CKIMMessage) alloc] init];
 BOOL isPending;
 BOOL enabled;
 //BOOL alertActive = NO;
