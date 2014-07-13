@@ -20,7 +20,7 @@ CoreDataConversationManager* manager;
 BOOL isPending;
 //BOOL enabled;
 //BOOL alertActive = NO;
-BOOL debug = NO;
+BOOL debug = YES;
 NSString* rawAddress;
 NSString* reply;
 UITextField* responseField;
@@ -225,5 +225,5 @@ void kikReply() {
 									CFNotificationSuspensionBehaviorDeliverImmediately);
 
 	prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
-	if ([prefs[@"messagesUse"] boolValue]) %init(Kik);	
+	if ([prefs[@"kikUse"] boolValue]) %init(Kik);	
 }

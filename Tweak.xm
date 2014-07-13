@@ -7,7 +7,7 @@ CKIMMessage* sbMessage = [[CKIMMessage alloc] init];
 BOOL isPending;
 BOOL enabled;
 //BOOL alertActive = NO;
-BOOL debug = NO;
+BOOL debug = YES;
 NSString* rawAddress;
 NSString* reply;
 UITextField* responseField;

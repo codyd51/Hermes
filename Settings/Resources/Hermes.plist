@@ -71,6 +71,8 @@
 			<string>com.phillipt.hermes</string>
 			<key>label</key>
 			<string>Respring</string>
+			<key>action</key>
+			<string>respring</string>
 		</dict>
 		<dict>
 			<key>cell</key>
