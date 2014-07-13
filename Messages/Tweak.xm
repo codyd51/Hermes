@@ -156,9 +156,9 @@ void quickReply() {
 		}
 	}
 */
-	dla(@"[Hermes3] prefs are %@", [prefs description]);
-	dla(@"[Hermes3] isOutgoing is %@", prefs[@"isOutgoing"]);
-	dl(@"[Hermes3] Received message");
+	//dla(@"[Hermes3] prefs are %@", [prefs description]);
+	//dla(@"[Hermes3] isOutgoing is %@", prefs[@"isOutgoing"]);
+	//dl(@"[Hermes3] Received message");
 	//if (![prefs[@"isOutgoing"] boolValue] && ![prefs[@"isFromMe"] boolValue]) {
 
 	//if (![[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.MobileSMS"] && ![[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.springboard"]) {

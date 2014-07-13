@@ -1,7 +1,9 @@
 Hermes
 ===========
 
-The lightweight quick reply solution
+The cross-app, lightweight quick reply solution
+
+Hermes support quick reply for Messages, Kik, and WhatsApp.
 
 Currently a work in progress, soon to be published on BigBoss.
 
@@ -12,14 +14,8 @@ TODO
 
 * Finally fix messages showing up in different processes once and for all
 
-* Make Hermes work even when the Messages app is closed (I have no idea how to approach this one)
+* Make Hermes work even when the respective app is closed
 
 * Fix messages popping up over one another
-
-DONE - * Possible Kik integration, if I ever figure out how to send a kik message programmatically ( :( )
-
-DONE - * Refactor into subprojects
-
-* WhatsApp integration
 
 * Don't show messages if they're outgoing

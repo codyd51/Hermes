@@ -385,16 +385,19 @@ return [[[self bannerContext] item] pullDownNotification];
 
 %new
 -(void)messageReply {
+	dl(@"[Hermes3] Replying to Messages after touching reply button...");
 	notify_post("com.phillipt.hermes.received");
 }
 
 %new
 -(void)kikReply {
+	dl(@"[Hermes3] Replying to Kik after touching reply button...");
 	notify_post("com.phillipt.hermes.kikReceived");
 }
 
 %new
 -(void)whatsReply {
+	dl(@"[Hermes3] Replying to WhatsApp after touching reply button...");
 	notify_post("com.phillipt.hermes.whatsAppReceived");
 }
 
