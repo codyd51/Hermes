@@ -5,7 +5,7 @@ The cross-app, lightweight quick reply solution
 
 Hermes support quick reply for Messages, Kik, and WhatsApp.
 
-Currently a work in progress, soon to be published on BigBoss.
+v1.0 is finished and has been submitted to BigBoss, pending approval.
 
 Open soured under the Creative Commons license
 
