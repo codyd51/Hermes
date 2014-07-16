@@ -182,11 +182,11 @@ int randNum = 0;
 			if (randNum == 0) randNum++;
 			else if (randNum < 10 && randNum != 0) randNum++;
 			//return @"From Codyd51";
-			return @"Is this thing on?";
+			return @"Icon by @uhBlurry";
 		case 7:
 			if (randNum == 0) randNum++;
 			else if (randNum < 10 && randNum != 0) randNum++;
-			return @"We love you, /r/jailbreak!";
+			return @"I love you, /r/jailbreak!";
 		case 8:
 			if (randNum == 0) randNum++;
 			else if (randNum < 10 && randNum != 0) randNum++;
