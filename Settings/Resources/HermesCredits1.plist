@@ -38,6 +38,20 @@
 			<key>detail</key>
 			<string>hermesOpenTwitterJasonController</string> 
 		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSLinkCell</string>
+			<key>cellClass</key>
+			<string>HermesGiantMakerCell4</string>
+			<key>height</key>
+			<integer>100</integer>
+			<key>detail</key>
+			<string>hermesOpenTwitterAditController</string> 
+		</dict>
 	</array>
 	<key>title</key>
 	<string>Hermes</string>
