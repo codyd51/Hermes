@@ -61,6 +61,7 @@ NSMutableDictionary* prefs = [NSMutableDictionary dictionaryWithContentsOfFile:k
 	return alert;
 }
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	notify_post("com.phillipt.hermes.doneResponding");
 	isPending = NO;
 	//alertActive = NO;
 	prefs = [NSMutableDictionary dictionaryWithContentsOfFile:kSettingsPath];
@@ -372,6 +373,7 @@ return [[[self bannerContext] item] pullDownNotification];
 %new
 -(void)messageReply {
 	dl(@"[Hermes3] Replying to Messages after touching reply button...");
+	notify_post("com.phillipt.hermes.responding");
 	notify_post("com.phillipt.hermes.received");
 }
 
