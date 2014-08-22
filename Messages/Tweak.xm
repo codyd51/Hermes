@@ -10,6 +10,7 @@
 @class GarbClass;
 CKIMMessage* sbMessage = [[%c(CKIMMessage) alloc] init];
 BOOL isPending;
+BOOL isResponding;
 //BOOL alertActive = NO;
 BOOL debug = NO;
 NSString* rawAddress;
@@ -58,10 +59,20 @@ GarbClass* garb = [[%c(GarbClass) alloc] init];
 }
 %end
 
+void responding() {
+	isResponding = YES;
+}
+
+void doneResponding() {
+	isResponding = NO;
+}
+
 %hook CKIMMessage
 
 - (BOOL)postMessageReceivedIfNecessary {
 	///if ([[prefs objectForKey:@"enabled"] boolValue]) {
+	if (!isResponding)
+	{
 		dl(@"[Hermes3] recieved message");
 
 		sbMessage = self;
@@ -96,6 +107,8 @@ GarbClass* garb = [[%c(GarbClass) alloc] init];
 		}
 
 		dla(@"[Hermes3] Prefs dict is %@", prefs);
+	}
+		
 
 		//notify_post("com.phillipt.hermes.received");
 	//}
@@ -233,6 +246,18 @@ void quickReply() {
 									NULL,
 									(CFNotificationCallback)quickReply,
 									CFSTR("com.phillipt.hermes.received"),
+									NULL,
+									CFNotificationSuspensionBehaviorDeliverImmediately);
+	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
+									NULL,
+									(CFNotificationCallback)responding,
+									CFSTR("com.phillipt.hermes.responding"),
+									NULL,
+									CFNotificationSuspensionBehaviorDeliverImmediately);
+	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
+									NULL,
+									(CFNotificationCallback)doneResponding,
+									CFSTR("com.phillipt.hermes.doneResponding"),
 									NULL,
 									CFNotificationSuspensionBehaviorDeliverImmediately);
 
