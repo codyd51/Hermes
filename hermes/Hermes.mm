@@ -80,6 +80,16 @@ int width = [[UIScreen mainScreen] bounds].size.width;
 }
 @end
 
+@interface HermesGiantMakerCell4 : PSTableCell {
+	UIImageView *_background;
+	UILabel *label;
+	UILabel *label2;
+	UIButton *twitterButton;
+	UIButton *githubButton;
+	UIButton *emailButton;
+}
+@end
+
 @interface hermesOpenTwitterPhillipController : PSListController { }
 @end
 
@@ -436,6 +446,9 @@ UIColor* color = [UIColor colorWithRed:200/255.0f green:200/255.0f blue:200/255.
 	UINavigationController *navController = self.navigationController;
 	[navController popViewControllerAnimated:YES];
 }
+@end
+
+@interface hermesOpenTwitterAditController : PSListController { }
 @end
 
 @implementation hermesOpenTwitterAditController

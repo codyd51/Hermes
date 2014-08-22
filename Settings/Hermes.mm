@@ -80,16 +80,29 @@ int width = [[UIScreen mainScreen] bounds].size.width;
 }
 @end
 
+@interface HermesGiantMakerCell4 : PSTableCell {
+	UIImageView *_background;
+	UILabel *label;
+	UILabel *label2;
+	UIButton *twitterButton;
+	UIButton *githubButton;
+	UIButton *emailButton;
+}
+@end
+
 @interface hermesOpenTwitterPhillipController : PSListController { }
 @end
 
 @interface hermesOpenTwitterJasonController : PSListController { }
 @end
 
+@interface hermesOpenTwitterAditController : PSListController { }
+@end
+
 @implementation HermesListController
 - (id)specifiers {
 	if(_specifiers == nil) {
-		_specifiers = [[self loadSpecifiersFromPlistName:@"Hermes" target:self] retain];
+		_specifiers = [self loadSpecifiersFromPlistName:@"Hermes" target:self];
 	}
 	return _specifiers;
 }
