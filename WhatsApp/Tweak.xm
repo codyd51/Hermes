@@ -69,7 +69,7 @@ WhatsAppGarbClass* whatsAppGarb = [[%c(WhatsAppGarbClass) alloc] init];
 
 	//[kikMessage setObject:displayName forKey:@"displayName"];
 	[whatsAppMessage setObject:message.fromJID forKey:@"responseJID"];
-	if (message.text != nil && [message.text respondsToSelector:@selector(stringValue)] && ![message.text isEqualToString:@""]) [whatsAppMessage setObject:message.text forKey:@"text"];
+	if (message.text != nil && ![message.text isEqualToString:@""]) [whatsAppMessage setObject:message.text forKey:@"text"];
 	else [whatsAppMessage setObject:[NSString stringWithFormat:@"%@ has sent you a picture message!", message.pushName] forKey:@"text"];
 	[whatsAppMessage setObject:message.pushName forKey:@"displayName"];
 	//[kikMessage setObject:user.username forKey:@"kikUser"];

@@ -91,7 +91,7 @@ void doneResponding() {
 
 		[(NSMutableDictionary*)prefs setObject:titleType forKey:@"titleType"];
 		[(NSMutableDictionary*)prefs setObject:sbMessage.sender.name forKey:@"displayName"];
-		if (text.text.string != nil && [text.text.string respondsToSelector:@selector(stringValue)] && ![text.text.string isEqualToString:@""]) [(NSMutableDictionary*)prefs setObject:text.text.string forKey:@"text"];
+		if (text.text.string != nil && ![text.text.string isEqualToString:@""]) [(NSMutableDictionary*)prefs setObject:text.text.string forKey:@"text"];
 		else [(NSMutableDictionary*)prefs setObject:[NSString stringWithFormat:@"%@ has sent you a picture!", sbMessage.sender.name] forKey:@"text"];
 		[(NSMutableDictionary*)prefs setObject:sbMessage.sender.rawAddress forKey:@"rawAddress"];
 		[(NSMutableDictionary*)prefs setObject:sbMessage.IMMessage.guid forKey:@"guid"];                                                      

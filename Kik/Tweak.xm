@@ -100,7 +100,7 @@ KikGarbClass* kikGarb = [[%c(KikGarbClass) alloc] init];
 	[kikMessage setObject:displayName forKey:@"displayName"];
 	[kikMessage setObject:user.username forKey:@"kikUser"];
 	[kikMessage setObject:[userInfo objectForKey:@"chatUserJid"] forKey:@"jid"];
-	if ([userInfo objectForKey:@"messageContent"] != nil && ![[userInfo objectForKey:@"messageContent"] isEqualToString:@""] && [[userInfo objectForKey:@"messageContent"] respondsToSelector:@selector(stringValue)]) {
+	if ([userInfo objectForKey:@"messageContent"] != nil && ![[userInfo objectForKey:@"messageContent"] isEqualToString:@""]) {
 		[kikMessage setObject:[userInfo objectForKey:@"messageContent"] forKey:@"text"];
 	}
 	else [kikMessage setObject:[NSString stringWithFormat:@"%@ has sent you a picture message!", displayName] forKey:@"text"];
